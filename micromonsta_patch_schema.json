@@ -1,0 +1,1250 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Micromonsta 2 Patch Schema",
+  "type": "object",
+  "properties": {
+    "OSC1_Algo": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 52,
+      "default": 0,
+      "description": "Oscillator 1; scale=enum; unit=; offset=20"
+    },
+    "OSC1_Shape": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 55,
+      "default": 0,
+      "description": "Oscillator 1; scale=enum; unit=; offset=21"
+    },
+    "OSC1_CoarseTune": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 38,
+      "default": 0,
+      "description": "Oscillator 1; scale=linear; unit=semitones; offset=22"
+    },
+    "OSC1_FineTune": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 56,
+      "default": 0,
+      "description": "Oscillator 1; scale=linear; unit=cents; offset=23"
+    },
+    "OSC2_Algo": {
+      "type": "integer",
+      "minimum": 60,
+      "maximum": 77,
+      "default": 67,
+      "description": "Oscillator 2; scale=enum; unit=; offset=24"
+    },
+    "OSC2_Shape": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0,
+      "description": "Oscillator 2; scale=enum; unit=; offset=25"
+    },
+    "OSC2_CoarseTune": {
+      "type": "integer",
+      "minimum": 37,
+      "maximum": 80,
+      "default": 80,
+      "description": "Oscillator 2; scale=linear; unit=semitones; offset=26"
+    },
+    "OSC2_FineTune": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127,
+      "default": 24,
+      "description": "Oscillator 2; scale=linear; unit=cents; offset=27"
+    },
+    "OSC3_Algo": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127,
+      "default": 24,
+      "description": "Oscillator 3; scale=enum; unit=; offset=28"
+    },
+    "OSC3_Shape": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127,
+      "default": 24,
+      "description": "Oscillator 3; scale=enum; unit=; offset=29"
+    },
+    "OSC3_CoarseTune": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 40,
+      "default": 0,
+      "description": "Oscillator 3; scale=linear; unit=semitones; offset=30"
+    },
+    "OSC3_FineTune": {
+      "type": "integer",
+      "minimum": 62,
+      "maximum": 62,
+      "default": 62,
+      "description": "Oscillator 3; scale=linear; unit=cents; offset=31"
+    },
+    "MIX1": {
+      "type": "integer",
+      "minimum": 2,
+      "maximum": 2,
+      "default": 2,
+      "description": "MIX1; scale=linear; unit=; offset=32"
+    },
+    "MIX2": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 32,
+      "default": 0,
+      "description": "MIX2; scale=linear; unit=; offset=33"
+    },
+    "MIX3": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 13,
+      "default": 0,
+      "description": "MIX3; scale=linear; unit=; offset=34"
+    },
+    "NZE": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 15,
+      "default": 6,
+      "description": "Noise; scale=linear; unit=; offset=35"
+    },
+    "FLT_Type": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127,
+      "default": 0,
+      "description": "Filter; scale=enum; unit=; offset=36"
+    },
+    "FLT_Cutoff": {
+      "type": "integer",
+      "minimum": 40,
+      "maximum": 76,
+      "default": 64,
+      "description": "Filter; scale=linear; unit=; offset=37"
+    },
+    "FLT_Resonance": {
+      "type": "integer",
+      "minimum": 39,
+      "maximum": 89,
+      "default": 64,
+      "description": "Filter; scale=linear; unit=; offset=38"
+    },
+    "FLT_EnvAmt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 19,
+      "default": 6,
+      "description": "Filter; scale=linear; unit=; offset=39"
+    },
+    "FLT_Character": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 0,
+      "description": "Filter; scale=linear; unit=; offset=40"
+    },
+    "FLT_KBD": {
+      "type": "integer",
+      "minimum": 40,
+      "maximum": 76,
+      "default": 64,
+      "description": "Filter; scale=linear; unit=; offset=41"
+    },
+    "FLT_Tracking": {
+      "type": "integer",
+      "minimum": 39,
+      "maximum": 75,
+      "default": 59,
+      "description": "Filter; scale=linear; unit=; offset=42"
+    },
+    "FLT_FM": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 19,
+      "default": 10,
+      "description": "Filter; scale=linear; unit=; offset=43"
+    },
+    "UNUSED_44": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 111,
+      "default": 0,
+      "description": "UNUSED; scale=linear; unit=; offset=44"
+    },
+    "UNUSED_45": {
+      "type": "integer",
+      "minimum": 40,
+      "maximum": 76,
+      "default": 52,
+      "description": "UNUSED; scale=linear; unit=; offset=45"
+    },
+    "DRV": {
+      "type": "integer",
+      "minimum": 39,
+      "maximum": 89,
+      "default": 64,
+      "description": "DRV; scale=linear; unit=; offset=46"
+    },
+    "Mix_Level": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127,
+      "default": 127,
+      "description": "Mix; scale=linear; unit=; offset=47"
+    },
+    "ENV1_Attack": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127,
+      "default": 0,
+      "description": "ENV1; scale=linear; unit=; offset=48"
+    },
+    "ENV1_Decay": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127,
+      "default": 0,
+      "description": "ENV1; scale=linear; unit=; offset=49"
+    },
+    "ENV1_Sustain": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 34,
+      "default": 0,
+      "description": "ENV1; scale=linear; unit=; offset=50"
+    },
+    "ENV1_Release": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 1,
+      "description": "ENV1; scale=linear; unit=; offset=51"
+    },
+    "ENV2_Attack": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127,
+      "default": 127,
+      "description": "ENV2; scale=linear; unit=; offset=52"
+    },
+    "ENV2_Decay": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127,
+      "default": 0,
+      "description": "ENV2; scale=linear; unit=; offset=53"
+    },
+    "ENV2_Sustain": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 1,
+      "description": "ENV2; scale=linear; unit=; offset=54"
+    },
+    "ENV2_Release": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 126,
+      "default": 0,
+      "description": "ENV2; scale=linear; unit=; offset=55"
+    },
+    "ENV3_Attack": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 0,
+      "description": "ENV3; scale=linear; unit=; offset=56"
+    },
+    "ENV3_Decay": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127,
+      "default": 0,
+      "description": "ENV3; scale=linear; unit=; offset=57"
+    },
+    "ENV3_Sustain": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 72,
+      "default": 0,
+      "description": "ENV3; scale=linear; unit=; offset=58"
+    },
+    "ENV3_Release": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 72,
+      "default": 0,
+      "description": "ENV3; scale=linear; unit=; offset=59"
+    },
+    "LFO1_Waveform": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127,
+      "default": 0,
+      "description": "LFO 1; scale=linear; unit=; offset=60"
+    },
+    "LFO1_Speed": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127,
+      "default": 127,
+      "description": "LFO 1; scale=linear; unit=; offset=61"
+    },
+    "LFO1_Mode": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 97,
+      "default": 0,
+      "description": "LFO 1; scale=enum; unit=; offset=62"
+    },
+    "LFO1_UNUSED": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 42,
+      "description": "LFO 1; scale=linear; unit=; offset=63"
+    },
+    "LFO2_Waveform": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127,
+      "default": 64,
+      "description": "LFO 2; scale=linear; unit=; offset=64"
+    },
+    "LFO2_Speed": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127,
+      "default": 32,
+      "description": "LFO 2; scale=linear; unit=; offset=65"
+    },
+    "LFO2_Mode": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127,
+      "default": 32,
+      "description": "LFO 2; scale=enum; unit=; offset=66"
+    },
+    "LFO2_UNUSED": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 109,
+      "default": 42,
+      "description": "LFO 2; scale=linear; unit=; offset=67"
+    },
+    "LFO3_Waveform": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127,
+      "default": 64,
+      "description": "LFO3; scale=linear; unit=; offset=68"
+    },
+    "LFO3_Speed": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127,
+      "default": 32,
+      "description": "LFO3; scale=linear; unit=; offset=69"
+    },
+    "LFO3_Mode": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 32,
+      "description": "LFO3; scale=enum; unit=; offset=70"
+    },
+    "LFO3_UNUSED": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 16,
+      "default": 0,
+      "description": "LFO3; scale=linear; unit=; offset=71"
+    },
+    "Matrix1_Dest": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0,
+      "description": "Matrix1; scale=linear; unit=; offset=72"
+    },
+    "Matrix1_Source": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 89,
+      "default": 64,
+      "description": "Matrix1; scale=enum; unit=; offset=73"
+    },
+    "Matrix1_Amount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3,
+      "default": 3,
+      "description": "Matrix1; scale=linear; unit=; offset=74"
+    },
+    "Matrix1_UNUSED": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 16,
+      "default": 0,
+      "description": "Matrix1; scale=linear; unit=; offset=75"
+    },
+    "Matrix2_Dest": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0,
+      "description": "Matrix2; scale=linear; unit=; offset=76"
+    },
+    "Matrix2_Source": {
+      "type": "integer",
+      "minimum": 2,
+      "maximum": 94,
+      "default": 48,
+      "description": "Matrix2; scale=enum; unit=; offset=77"
+    },
+    "Matrix2_Amount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3,
+      "default": 0,
+      "description": "Matrix2; scale=linear; unit=; offset=78"
+    },
+    "Matrix2_UNUSED": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 16,
+      "default": 0,
+      "description": "Matrix2; scale=linear; unit=; offset=79"
+    },
+    "Matrix3_Dest": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0,
+      "description": "Matrix3; scale=linear; unit=; offset=80"
+    },
+    "Matrix3_Source": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 127,
+      "default": 48,
+      "description": "Matrix3; scale=enum; unit=; offset=81"
+    },
+    "Matrix3_Amount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3,
+      "default": 0,
+      "description": "Matrix3; scale=linear; unit=; offset=82"
+    },
+    "Matrix3_UNUSED": {
+      "type": "integer",
+      "minimum": 5,
+      "maximum": 37,
+      "default": 21,
+      "description": "Matrix3; scale=linear; unit=; offset=83"
+    },
+    "Matrix4_Dest": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 18,
+      "default": 1,
+      "description": "Matrix4; scale=linear; unit=; offset=84"
+    },
+    "Matrix4_Source": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 1,
+      "description": "Matrix4; scale=enum; unit=; offset=85"
+    },
+    "Matrix4_Amount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 127,
+      "default": 8,
+      "description": "Matrix4; scale=linear; unit=; offset=86"
+    },
+    "Matrix4_UNUSED": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 39,
+      "default": 0,
+      "description": "Matrix4; scale=linear; unit=; offset=87"
+    },
+    "Matrix5_Dest": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 32,
+      "default": 0,
+      "description": "Matrix5; scale=linear; unit=; offset=88"
+    },
+    "Matrix5_Source": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 1,
+      "description": "Matrix5; scale=enum; unit=; offset=89"
+    },
+    "Matrix5_Amount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 126,
+      "default": 0,
+      "description": "Matrix5; scale=linear; unit=; offset=90"
+    },
+    "Matrix5_UNUSED": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 37,
+      "default": 0,
+      "description": "Matrix5; scale=linear; unit=; offset=91"
+    },
+    "Matrix6_Dest": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 34,
+      "default": 0,
+      "description": "Matrix6; scale=linear; unit=; offset=92"
+    },
+    "Matrix6_Source": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 1,
+      "description": "Matrix6; scale=enum; unit=; offset=93"
+    },
+    "Matrix6_Amount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 126,
+      "default": 0,
+      "description": "Matrix6; scale=linear; unit=; offset=94"
+    },
+    "Matrix6_UNUSED": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 39,
+      "default": 0,
+      "description": "Matrix6; scale=linear; unit=; offset=95"
+    },
+    "Matrix7_Dest": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 34,
+      "default": 0,
+      "description": "Matrix7; scale=linear; unit=; offset=96"
+    },
+    "Matrix7_Source": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 1,
+      "description": "Matrix7; scale=enum; unit=; offset=97"
+    },
+    "Matrix7_Amount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 124,
+      "default": 0,
+      "description": "Matrix7; scale=linear; unit=; offset=98"
+    },
+    "Matrix7_UNUSED": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 37,
+      "default": 0,
+      "description": "Matrix7; scale=linear; unit=; offset=99"
+    },
+    "Matrix8_Dest": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 32,
+      "default": 0,
+      "description": "Matrix8; scale=linear; unit=; offset=100"
+    },
+    "Matrix8_Source": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 1,
+      "description": "Matrix8; scale=enum; unit=; offset=101"
+    },
+    "Matrix8_Amount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 109,
+      "default": 0,
+      "description": "Matrix8; scale=linear; unit=; offset=102"
+    },
+    "Matrix8_UNUSED": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 39,
+      "default": 0,
+      "description": "Matrix8; scale=linear; unit=; offset=103"
+    },
+    "Matrix9_Dest": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 26,
+      "default": 0,
+      "description": "Matrix9; scale=linear; unit=; offset=104"
+    },
+    "Matrix9_Source": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 1,
+      "description": "Matrix9; scale=enum; unit=; offset=105"
+    },
+    "Matrix9_Amount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127,
+      "default": 0,
+      "description": "Matrix9; scale=linear; unit=; offset=106"
+    },
+    "Matrix9_UNUSED": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 30,
+      "default": 0,
+      "description": "Matrix9; scale=linear; unit=; offset=107"
+    },
+    "Matrix10_Dest": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 11,
+      "default": 0,
+      "description": "Matrix10; scale=linear; unit=; offset=108"
+    },
+    "Matrix10_Source": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1,
+      "default": 1,
+      "description": "Matrix10; scale=enum; unit=; offset=109"
+    },
+    "Matrix10_Amount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 52,
+      "default": 0,
+      "description": "Matrix10; scale=linear; unit=; offset=110"
+    },
+    "Matrix10_UNUSED": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 30,
+      "default": 0,
+      "description": "Matrix10; scale=linear; unit=; offset=111"
+    },
+    "Lag1_Source": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "default": 0,
+      "description": "Lag1; scale=enum; unit=; offset=112"
+    },
+    "Lag1_UN1": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1,
+      "default": 1,
+      "description": "Lag1; scale=linear; unit=; offset=113"
+    },
+    "Lag1_Amount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0,
+      "description": "Lag1; scale=linear; unit=; offset=114"
+    },
+    "Lag1_UN2": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 13,
+      "default": 0,
+      "description": "Lag1; scale=linear; unit=; offset=115"
+    },
+    "Lag2_Source": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 12,
+      "default": 0,
+      "description": "Lag2; scale=enum; unit=; offset=116"
+    },
+    "Lag2_UN1": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1,
+      "default": 1,
+      "description": "Lag2; scale=linear; unit=; offset=117"
+    },
+    "Lag2_Amount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 50,
+      "default": 0,
+      "description": "Lag2; scale=linear; unit=; offset=118"
+    },
+    "Lag2_UN2": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "default": 0,
+      "description": "Lag2; scale=linear; unit=; offset=119"
+    },
+    "Mult1_SRC_A": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 12,
+      "default": 0,
+      "description": "Mult1; scale=linear; unit=; offset=120"
+    },
+    "Mult1_UN1": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1,
+      "default": 1,
+      "description": "Mult1; scale=linear; unit=; offset=121"
+    },
+    "Mult1_SRC_B": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 99,
+      "default": 0,
+      "description": "Mult1; scale=linear; unit=; offset=122"
+    },
+    "Mult1_UN2": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 30,
+      "default": 0,
+      "description": "Mult1; scale=linear; unit=; offset=123"
+    },
+    "Mult2_SRC_A": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 98,
+      "default": 0,
+      "description": "Mult2; scale=linear; unit=; offset=124"
+    },
+    "Mult2_UN1": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 30,
+      "default": 0,
+      "description": "Mult2; scale=linear; unit=; offset=125"
+    },
+    "Mult2_SRC_B": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 30,
+      "default": 0,
+      "description": "Mult2; scale=linear; unit=; offset=126"
+    },
+    "Mult2_UN2": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 23,
+      "default": 0,
+      "description": "Mult2; scale=linear; unit=; offset=127"
+    },
+    "ARP_Style": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4,
+      "default": 0,
+      "description": "Arpeggiator; scale=linear; unit=; offset=128"
+    },
+    "ARP_Gate": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127,
+      "default": 0,
+      "description": "Arpeggiator; scale=linear; unit=; offset=129"
+    },
+    "ARP_OctaveRange": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 1,
+      "description": "Arpeggiator; scale=linear; unit=; offset=130"
+    },
+    "ARP_Speed": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 126,
+      "default": 0,
+      "description": "Arpeggiator; scale=linear; unit=; offset=131"
+    },
+    "ARP_OnOff": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0,
+      "description": "Arpeggiator; scale=linear; unit=; offset=132"
+    },
+    "ARP_UN1": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 104,
+      "default": 84,
+      "description": "Arpeggiator; scale=linear; unit=; offset=133"
+    },
+    "ARP_UN2": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 80,
+      "default": 48,
+      "description": "Arpeggiator; scale=linear; unit=; offset=134"
+    },
+    "ARP_Latch": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127,
+      "default": 0,
+      "description": "Arpeggiator; scale=linear; unit=; offset=135"
+    },
+    "ARP_Step1": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 99,
+      "default": 42,
+      "description": "Arpeggiator; scale=linear; unit=; offset=136"
+    },
+    "ARP_Step2": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127,
+      "default": 42,
+      "description": "Arpeggiator; scale=linear; unit=; offset=137"
+    },
+    "ARP_Step3": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 120,
+      "default": 0,
+      "description": "Arpeggiator; scale=linear; unit=; offset=138"
+    },
+    "ARP_Step4": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "default": 0,
+      "description": "Arpeggiator; scale=linear; unit=; offset=139"
+    },
+    "ARP_Step5": {
+      "type": "integer",
+      "minimum": 53,
+      "maximum": 64,
+      "default": 64,
+      "description": "Arpeggiator; scale=linear; unit=; offset=140"
+    },
+    "ARP_Step6": {
+      "type": "integer",
+      "minimum": 6,
+      "maximum": 7,
+      "default": 7,
+      "description": "Arpeggiator; scale=linear; unit=; offset=141"
+    },
+    "ARP_Step7": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3,
+      "default": 0,
+      "description": "Arpeggiator; scale=linear; unit=; offset=142"
+    },
+    "ARP_Step8": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3,
+      "default": 0,
+      "description": "Arpeggiator; scale=linear; unit=; offset=143"
+    },
+    "ARP_Step9": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0,
+      "description": "Arpeggiator; scale=linear; unit=; offset=144"
+    },
+    "ARP_Step10": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0,
+      "description": "Arpeggiator; scale=linear; unit=; offset=145"
+    },
+    "ARP_Step11": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0,
+      "description": "Arpeggiator; scale=linear; unit=; offset=146"
+    },
+    "ARP_Step12": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0,
+      "description": "Arpeggiator; scale=linear; unit=; offset=147"
+    },
+    "ARP_Step13": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "default": 0,
+      "description": "Arpeggiator; scale=linear; unit=; offset=148"
+    },
+    "ARP_Step14": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0,
+      "description": "Arpeggiator; scale=linear; unit=; offset=149"
+    },
+    "ARP_Step15": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 7,
+      "default": 3,
+      "description": "Arpeggiator; scale=linear; unit=; offset=150"
+    },
+    "ARP_Step16": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3,
+      "default": 3,
+      "description": "Arpeggiator; scale=linear; unit=; offset=151"
+    },
+    "IFX_Type": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3,
+      "default": 0,
+      "description": "IFX; scale=enum; unit=; offset=152"
+    },
+    "IFX_UN1": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4,
+      "default": 3,
+      "description": "IFX; scale=linear; unit=; offset=153"
+    },
+    "EQ_Freq": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "default": 0,
+      "description": "EQ; scale=linear; unit=; offset=154"
+    },
+    "EQ_UN1": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "default": 0,
+      "description": "EQ; scale=linear; unit=; offset=155"
+    },
+    "Delay_Type": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "default": 0,
+      "description": "Delay; scale=enum; unit=; offset=156"
+    },
+    "Delay_Time": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "default": 0,
+      "description": "Delay; scale=linear; unit=; offset=157"
+    },
+    "Delay_Feedback": {
+      "type": "integer",
+      "minimum": 15,
+      "maximum": 15,
+      "default": 15,
+      "description": "Delay; scale=linear; unit=; offset=158"
+    },
+    "Delay_Level": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "default": 0,
+      "description": "Delay; scale=linear; unit=; offset=159"
+    },
+    "Reverb_Decay": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "default": 0,
+      "description": "Reverb; scale=linear; unit=; offset=160"
+    },
+    "Reverb_Mod": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "default": 0,
+      "description": "Reverb; scale=linear; unit=; offset=161"
+    },
+    "Reverb_Level": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "default": 0,
+      "description": "Reverb; scale=linear; unit=; offset=162"
+    },
+    "Reverb_UN1": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "default": 0,
+      "description": "Reverb; scale=linear; unit=; offset=163"
+    },
+    "VoiceMode_Unison": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "default": 0,
+      "description": "VoiceMode; scale=linear; unit=; offset=164"
+    },
+    "Pan_Spread": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "default": 0,
+      "description": "Pan; scale=linear; unit=; offset=165"
+    },
+    "Glide": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "default": 0,
+      "description": "Glide; scale=linear; unit=; offset=166"
+    },
+    "Voice_Detune": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "default": 0,
+      "description": "Voice; scale=linear; unit=; offset=167"
+    },
+    "Osc_Detune": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "default": 0,
+      "description": "Osc; scale=linear; unit=; offset=168"
+    },
+    "PB_Down": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "default": 0,
+      "description": "PB; scale=linear; unit=; offset=169"
+    },
+    "PB_Up": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "default": 0,
+      "description": "PB; scale=linear; unit=; offset=170"
+    },
+    "VelSens_VCA": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "default": 0,
+      "description": "Velocity Sensitivity; scale=linear; unit=; offset=171"
+    },
+    "VelSens_Flt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "default": 0,
+      "description": "Velocity Sensitivity; scale=linear; unit=; offset=172"
+    },
+    "EnvAssign_Flags": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "default": 0,
+      "description": "EnvAssign; scale=enum; unit=; offset=173"
+    },
+    "Phase_Reset": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "default": 0,
+      "description": "Phase Reset; scale=linear; unit=; offset=174"
+    }
+  },
+  "required": [
+    "OSC1_Algo",
+    "OSC1_Shape",
+    "OSC1_CoarseTune",
+    "OSC1_FineTune",
+    "OSC2_Algo",
+    "OSC2_Shape",
+    "OSC2_CoarseTune",
+    "OSC2_FineTune",
+    "OSC3_Algo",
+    "OSC3_Shape",
+    "OSC3_CoarseTune",
+    "OSC3_FineTune",
+    "MIX1",
+    "MIX2",
+    "MIX3",
+    "NZE",
+    "FLT_Type",
+    "FLT_Cutoff",
+    "FLT_Resonance",
+    "FLT_EnvAmt",
+    "FLT_Character",
+    "FLT_KBD",
+    "FLT_Tracking",
+    "FLT_FM",
+    "UNUSED_44",
+    "UNUSED_45",
+    "DRV",
+    "Mix_Level",
+    "ENV1_Attack",
+    "ENV1_Decay",
+    "ENV1_Sustain",
+    "ENV1_Release",
+    "ENV2_Attack",
+    "ENV2_Decay",
+    "ENV2_Sustain",
+    "ENV2_Release",
+    "ENV3_Attack",
+    "ENV3_Decay",
+    "ENV3_Sustain",
+    "ENV3_Release",
+    "LFO1_Waveform",
+    "LFO1_Speed",
+    "LFO1_Mode",
+    "LFO1_UNUSED",
+    "LFO2_Waveform",
+    "LFO2_Speed",
+    "LFO2_Mode",
+    "LFO2_UNUSED",
+    "LFO3_Waveform",
+    "LFO3_Speed",
+    "LFO3_Mode",
+    "LFO3_UNUSED",
+    "Matrix1_Dest",
+    "Matrix1_Source",
+    "Matrix1_Amount",
+    "Matrix1_UNUSED",
+    "Matrix2_Dest",
+    "Matrix2_Source",
+    "Matrix2_Amount",
+    "Matrix2_UNUSED",
+    "Matrix3_Dest",
+    "Matrix3_Source",
+    "Matrix3_Amount",
+    "Matrix3_UNUSED",
+    "Matrix4_Dest",
+    "Matrix4_Source",
+    "Matrix4_Amount",
+    "Matrix4_UNUSED",
+    "Matrix5_Dest",
+    "Matrix5_Source",
+    "Matrix5_Amount",
+    "Matrix5_UNUSED",
+    "Matrix6_Dest",
+    "Matrix6_Source",
+    "Matrix6_Amount",
+    "Matrix6_UNUSED",
+    "Matrix7_Dest",
+    "Matrix7_Source",
+    "Matrix7_Amount",
+    "Matrix7_UNUSED",
+    "Matrix8_Dest",
+    "Matrix8_Source",
+    "Matrix8_Amount",
+    "Matrix8_UNUSED",
+    "Matrix9_Dest",
+    "Matrix9_Source",
+    "Matrix9_Amount",
+    "Matrix9_UNUSED",
+    "Matrix10_Dest",
+    "Matrix10_Source",
+    "Matrix10_Amount",
+    "Matrix10_UNUSED",
+    "Lag1_Source",
+    "Lag1_UN1",
+    "Lag1_Amount",
+    "Lag1_UN2",
+    "Lag2_Source",
+    "Lag2_UN1",
+    "Lag2_Amount",
+    "Lag2_UN2",
+    "Mult1_SRC_A",
+    "Mult1_UN1",
+    "Mult1_SRC_B",
+    "Mult1_UN2",
+    "Mult2_SRC_A",
+    "Mult2_UN1",
+    "Mult2_SRC_B",
+    "Mult2_UN2",
+    "ARP_Style",
+    "ARP_Gate",
+    "ARP_OctaveRange",
+    "ARP_Speed",
+    "ARP_OnOff",
+    "ARP_UN1",
+    "ARP_UN2",
+    "ARP_Latch",
+    "ARP_Step1",
+    "ARP_Step2",
+    "ARP_Step3",
+    "ARP_Step4",
+    "ARP_Step5",
+    "ARP_Step6",
+    "ARP_Step7",
+    "ARP_Step8",
+    "ARP_Step9",
+    "ARP_Step10",
+    "ARP_Step11",
+    "ARP_Step12",
+    "ARP_Step13",
+    "ARP_Step14",
+    "ARP_Step15",
+    "ARP_Step16",
+    "IFX_Type",
+    "IFX_UN1",
+    "EQ_Freq",
+    "EQ_UN1",
+    "Delay_Type",
+    "Delay_Time",
+    "Delay_Feedback",
+    "Delay_Level",
+    "Reverb_Decay",
+    "Reverb_Mod",
+    "Reverb_Level",
+    "Reverb_UN1",
+    "VoiceMode_Unison",
+    "Pan_Spread",
+    "Glide",
+    "Voice_Detune",
+    "Osc_Detune",
+    "PB_Down",
+    "PB_Up",
+    "VelSens_VCA",
+    "VelSens_Flt",
+    "EnvAssign_Flags",
+    "Phase_Reset"
+  ],
+  "additionalProperties": false
+}
