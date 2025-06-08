@@ -39,22 +39,22 @@ type ParamInfo struct {
 
 // categoryCodes maps category names to SysEx category byte values
 var categoryCodes = map[string]byte{
-	"Bass":       0x01,
-	"Lead":       0x02,
-	"Pad":        0x03,
-	"Keys":       0x04,
-	"Organ":      0x05,
-	"String":     0x06,
-	"Brass":      0x07,
-	"Percussion": 0x08,
-	"Drone":      0x09,
-	"Noise":      0x0A,
-	"SFX":        0x0B,
-	"Arp":        0x0C,
-	"Misc":       0x0D,
-	"User1":      0x0E,
-	"User2":      0x0F,
-	"User3":      0x10,
+	"Bass":       0x00,
+	"Lead":       0x01,
+	"Pad":        0x02,
+	"Keys":       0x03,
+	"Organ":      0x04,
+	"String":     0x05,
+	"Brass":      0x06,
+	"Percussion": 0x07,
+	"Drone":      0x08,
+	"Noise":      0x09,
+	"SFX":        0x0A,
+	"Arp":        0x0B,
+	"Misc":       0x0C,
+	"User1":      0x0D,
+	"User2":      0x0E,
+	"User3":      0x0F,
 }
 
 func main() {
