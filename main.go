@@ -60,6 +60,11 @@ var categoryCodes = map[string]byte{
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
+	// Verify initPatch length
+	if len(initPatch) != 176 {
+		log.Fatalf("Init patch size is %d bytes; expected 176", len(initPatch))
+	}
+
 	// Command-line flags
 	category := flag.String("category", "", "Category of presets to generate (e.g. Lead, Pad)")
 	count := flag.Int("count", 1, "Number of presets to generate")
@@ -126,7 +131,6 @@ func main() {
 		if len(name) > 8 {
 			name = name[:8]
 		}
-		// Pad or re-roll on collision
 		for {
 			if _, used := names[name]; !used {
 				names[name] = struct{}{}
@@ -141,33 +145,44 @@ func main() {
 		// Build the SysEx patch
 		patch := make([]byte, len(initPatch))
 		copy(patch, initPatch)
-		// Single preset identifier
+
+		// Enforce fixed SysEx bytes
+		patch[0] = 0xF0
+		patch[1] = 0x00
+		patch[2] = 0x21
+		patch[3] = 0x22
+		patch[4] = 0x4D
 		patch[5] = 0x02
 		patch[6] = 0x03
+		patch[7] = 0x09
 		// Name: bytes 8-15
 		nameBytes := []byte(name)
 		for i := 0; i < 8; i++ {
 			if i < len(nameBytes) {
 				patch[8+i] = nameBytes[i]
 			} else {
-				patch[8+i] = 0x20 // space padding
+				patch[8+i] = 0x20
 			}
 		}
 		// Category byte at 16
 		patch[16] = catCode
+		// Reserved zero bytes 17-19
+		patch[17], patch[18], patch[19] = 0x00, 0x00, 0x00
 
-		// Apply parameters
+		// Apply parameters to bytes 20-174
 		for pname, val := range config {
 			offset := params[pname].SysexOffset
 			patch[offset] = byte(val)
 		}
+
+		// SysEx end
+		patch[len(patch)-1] = 0xF7
 
 		patches = append(patches, patch)
 	}
 
 	// Export
 	if *single {
-		// Concatenate and write to one file
 		out := make([]byte, 0)
 		for _, p := range patches {
 			out = append(out, p...)
@@ -177,7 +192,6 @@ func main() {
 		}
 		fmt.Printf("Wrote %d presets to %s\n", len(patches), *output)
 	} else {
-		// Ensure output dir
 		if err := os.MkdirAll(*output, 0755); err != nil {
 			log.Fatalf("failed to create directory: %v", err)
 		}
