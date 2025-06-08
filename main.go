@@ -69,7 +69,6 @@ func main() {
 	category := flag.String("category", "", "Category of presets to generate (e.g. Lead, Pad)")
 	count := flag.Int("count", 1, "Number of presets to generate")
 	single := flag.Bool("single", true, "Export presets in a single SysEx file (default true)")
-	output := flag.String("output", "generated.syx", "Output SysEx file name (or directory for single files)")
 	flag.Parse()
 
 	if *category == "" {
@@ -86,7 +85,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to read category JSON: %v", err)
 	}
-
 	var params map[string]ParamInfo
 	if err := json.Unmarshal(data, &params); err != nil {
 		log.Fatalf("failed to parse category JSON: %v", err)
@@ -99,108 +97,124 @@ func main() {
 		log.Fatalf("failed to compile JSON schema: %v", err)
 	}
 
+	// Ensure output directory
+	outDir := "presets"
+	if err := os.MkdirAll(outDir, 0755); err != nil {
+		log.Fatalf("failed to create presets directory: %v", err)
+	}
+
 	// Generate unique presets
-	patches := make([][]byte, 0, *count)
+	var patches [][]byte
+	var patchNames []string
 	names := make(map[string]struct{})
 	configs := make(map[string]struct{})
 
 	for len(patches) < *count {
-		// Build parameter map
+		// Randomize parameters
 		config := make(map[string]int)
-		for name, info := range params {
-			val := rand.Intn(info.Max-info.Min+1) + info.Min
-			config[name] = val
+		for pname, info := range params {
+			config[pname] = rand.Intn(info.Max-info.Min+1) + info.Min
 		}
-
-		// Validate against schema
-		result, err := schema.Validate(gojsonschema.NewGoLoader(config))
-		if err != nil || !result.Valid() {
+		// Validate and ensure distinct
+		result, _ := schema.Validate(gojsonschema.NewGoLoader(config))
+		if !result.Valid() {
 			continue
 		}
-
-		// Ensure distinct config
-		cfgBytes, _ := json.Marshal(config)
-		key := string(cfgBytes)
+		key := string(mustJSON(config))
 		if _, exists := configs[key]; exists {
 			continue
 		}
 		configs[key] = struct{}{}
 
-		// Generate unique name
+		// Unique name
+		name := uniqueName(names)
+		names[name] = struct{}{}
+
+		// Build patch
+		patch := buildPatch(name, catCode, params, config)
+		patches = append(patches, patch)
+		patchNames = append(patchNames, name)
+	}
+
+	// Timestamp and first name
+	timestamp := time.Now().Format("2006-01-02_15-04-05")
+	firstName := patchNames[0]
+
+	if *single {
+		// Single file name
+		base := "generated"
+		n := *count
+		if n > 1 {
+			base = fmt.Sprintf("generated_%d_%s_%s", n, firstName, timestamp)
+		} else {
+			base = fmt.Sprintf("generated_%s_%s", firstName, timestamp)
+		}
+		outPath := filepath.Join(outDir, base+".syx")
+		if err := os.WriteFile(outPath, concat(patches), 0644); err != nil {
+			log.Fatalf("failed to write %s: %v", outPath, err)
+		}
+		fmt.Printf("Wrote %d preset(s) to %s\n", *count, outPath)
+	} else {
+		// Multiple files
+		for i, patch := range patches {
+			extra := fmt.Sprintf("_%02d_%s.syx", i+1, timestamp)
+			fname := firstName + extra
+			outPath := filepath.Join(outDir, fname)
+			if err := os.WriteFile(outPath, patch, 0644); err != nil {
+				log.Fatalf("failed to write %s: %v", outPath, err)
+			}
+		}
+		fmt.Printf("Wrote %d presets to %s directory\n", *count, outDir)
+	}
+}
+
+func mustJSON(v interface{}) []byte {
+	b, _ := json.Marshal(v)
+	return b
+}
+
+func uniqueName(existing map[string]struct{}) string {
+	for {
 		name := randomdata.Adjective()
 		if len(name) > 8 {
 			name = name[:8]
 		}
-		for {
-			if _, used := names[name]; !used {
-				names[name] = struct{}{}
-				break
-			}
-			name = randomdata.Adjective()
-			if len(name) > 8 {
-				name = name[:8]
-			}
+		if _, used := existing[name]; !used {
+			return name
 		}
-
-		// Build the SysEx patch
-		patch := make([]byte, len(initPatch))
-		copy(patch, initPatch)
-
-		// Enforce fixed SysEx bytes
-		patch[0] = 0xF0
-		patch[1] = 0x00
-		patch[2] = 0x21
-		patch[3] = 0x22
-		patch[4] = 0x4D
-		patch[5] = 0x02
-		patch[6] = 0x03
-		patch[7] = 0x09
-		// Name: bytes 8-15
-		nameBytes := []byte(name)
-		for i := 0; i < 8; i++ {
-			if i < len(nameBytes) {
-				patch[8+i] = nameBytes[i]
-			} else {
-				patch[8+i] = 0x20
-			}
-		}
-		// Category byte at 16
-		patch[16] = catCode
-		// Reserved zero bytes 17-19
-		patch[17], patch[18], patch[19] = 0x00, 0x00, 0x00
-
-		// Apply parameters to bytes 20-174
-		for pname, val := range config {
-			offset := params[pname].SysexOffset
-			patch[offset] = byte(val)
-		}
-
-		// SysEx end
-		patch[len(patch)-1] = 0xF7
-
-		patches = append(patches, patch)
 	}
+}
 
-	// Export
-	if *single {
-		out := make([]byte, 0)
-		for _, p := range patches {
-			out = append(out, p...)
+func buildPatch(name string, catCode byte, params map[string]ParamInfo, config map[string]int) []byte {
+	patch := make([]byte, len(initPatch))
+	copy(patch, initPatch)
+	// Header & footer
+	patch[0], patch[1], patch[2], patch[3], patch[4] = 0xF0, 0x00, 0x21, 0x22, 0x4D
+	patch[5], patch[6], patch[7] = 0x02, 0x03, 0x09
+	// Name
+	for i := 0; i < 8; i++ {
+		if i < len(name) {
+			patch[8+i] = name[i]
+		} else {
+			patch[8+i] = 0x20
 		}
-		if err := os.WriteFile(*output, out, 0644); err != nil {
-			log.Fatalf("failed to write output: %v", err)
-		}
-		fmt.Printf("Wrote %d presets to %s\n", len(patches), *output)
-	} else {
-		if err := os.MkdirAll(*output, 0755); err != nil {
-			log.Fatalf("failed to create directory: %v", err)
-		}
-		for i, p := range patches {
-			fpath := filepath.Join(*output, fmt.Sprintf("%s_%02d.syx", *category, i+1))
-			if err := os.WriteFile(fpath, p, 0644); err != nil {
-				log.Fatalf("failed to write %s: %v", fpath, err)
-			}
-		}
-		fmt.Printf("Wrote %d presets to directory %s\n", len(patches), *output)
 	}
+	// Category & zeros
+	patch[16], patch[17], patch[18], patch[19] = catCode, 0x00, 0x00, 0x00
+	// Params
+	for pname, val := range config {
+		offset := params[pname].SysexOffset
+		patch[offset] = byte(val)
+	}
+	// End
+	patch[len(patch)-1] = 0xF7
+	return patch
+}
+
+func concat(patches [][]byte) []byte {
+	var out []byte
+	for _, p := range patches {
+		out = append(out, p...)
+	}
+	return out
 }
