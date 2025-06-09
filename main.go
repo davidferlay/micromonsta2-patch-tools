@@ -72,7 +72,6 @@ func main() {
 	// flags
 	category := flag.String("category", "", "Category of presets to generate (e.g. Lead)")
 	count := flag.Int("count", 1, "Number of presets to generate")
-	single := flag.Bool("single", true, "Export in a single SysEx file")
 	flag.Parse()
 
 	// validate category
@@ -105,7 +104,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to compile JSON schema: %v", err)
 	}
-	// extract schema properties
 	var schemaStruct struct {
 		Properties map[string]propSchema `json:"properties"`
 	}
@@ -141,9 +139,9 @@ func main() {
 		allowed[pname] = vals
 	}
 
-	// prepare output dir
-	outDir := "presets"
-	if err := os.MkdirAll(outDir, 0755); err != nil {
+	// prepare presets directory
+	rootDir := "presets"
+	if err := os.MkdirAll(rootDir, 0755); err != nil {
 		log.Fatalf("failed to create presets directory: %v", err)
 	}
 
@@ -157,7 +155,7 @@ func main() {
 		for pname, vals := range allowed {
 			cfg[pname] = vals[rand.Intn(len(vals))]
 		}
-		// validate config
+		// validate config against schema
 		r, _ := schema.Validate(gojsonschema.NewGoLoader(cfg))
 		if !r.Valid() {
 			continue
@@ -175,30 +173,35 @@ func main() {
 		patches = append(patches, buildPatch(rawName, catCode, params, cfg))
 	}
 
-	// output files
+	// bundle naming: random bundleName distinct from preset names
+	bundleRaw := uniqueName(seen)
+	bundleName := strings.Title(strings.ToLower(bundleRaw))
 	timeStr := strconv.FormatInt(time.Now().Unix(), 10)
-	first := namesList[0]
-	var base string
-	if *count > 1 {
-		base = fmt.Sprintf("%s_%d_%s_%s", *category, *count, first, timeStr)
-	} else {
-		base = fmt.Sprintf("%s_%s_%s", *category, first, timeStr)
+
+	// create subdirectory for bundle
+	subDir := filepath.Join(rootDir, bundleName)
+	if err := os.MkdirAll(subDir, 0755); err != nil {
+		log.Fatalf("failed to create bundle subdirectory: %v", err)
 	}
 
-	if *single {
-		outPath := filepath.Join(outDir, base+".syx")
-		if err := os.WriteFile(outPath, concat(patches), 0644); err != nil {
-			log.Fatalf("failed to write %s: %v", outPath, err)
-		}
-		fmt.Printf("Wrote %d preset(s) to %s\n", *count, outPath)
-	} else {
+	// combined file: Category_BundleName_bundle_Timestamp.syx
+	combined := fmt.Sprintf("%s_%s_bundle_%s.syx", *category, bundleName, timeStr)
+	combinedPath := filepath.Join(subDir, combined)
+	if err := os.WriteFile(combinedPath, concat(patches), 0644); err != nil {
+		log.Fatalf("failed to write %s: %v", combinedPath, err)
+	}
+	fmt.Printf("Wrote combined %d preset(s) to %s\n", *count, combinedPath)
+
+	// individual files
+	if *count > 1 {
 		for i, p := range patches {
-			fname := fmt.Sprintf("%s_%02d_%s.syx", first, i+1, timeStr)
-			if err := os.WriteFile(filepath.Join(outDir, fname), p, 0644); err != nil {
-				log.Fatalf("failed to write %s: %v", fname, err)
+			fname := fmt.Sprintf("%s_%s_%s.syx", *category, namesList[i], timeStr)
+			path := filepath.Join(subDir, fname)
+			if err := os.WriteFile(path, p, 0644); err != nil {
+				log.Fatalf("failed to write %s: %v", path, err)
 			}
 		}
-		fmt.Printf("Wrote %d presets to %s directory\n", *count, outDir)
+		fmt.Printf("Wrote %d individual presets to %s\n", *count, subDir)
 	}
 }
 
