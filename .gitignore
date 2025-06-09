@@ -1,4 +1,11 @@
-micromonsta2-patch-tools
+# Ignore the directory and any file starting with its name
+micromonsta2-patch-tools/
 micromonsta2-patch-tools.*
-*.csv
-*.syx
+
+# Ignore .csv and .syx only in the project root
+/*.csv
+/*.syx
+
+# Explicitly include specific .syx files in the root
+!/Bass_Ancient_1749423125.syx
+!/P292_Init.syx
