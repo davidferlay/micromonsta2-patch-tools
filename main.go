@@ -40,6 +40,12 @@ type ParamInfo struct {
 	Section     string `json:"section"`
 }
 
+// propSchema holds JSON schema constraints for a patch property
+type propSchema struct {
+	Minimum int `json:"minimum"`
+	Maximum int `json:"maximum"`
+}
+
 // categoryCodes maps category names to SysEx category byte values
 var categoryCodes = map[string]byte{
 	"Bass":       0x00,
@@ -63,18 +69,13 @@ var categoryCodes = map[string]byte{
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
-	// Verify initPatch length
-	if len(initPatch) != 176 {
-		log.Fatalf("Init patch size is %d bytes; expected 176", len(initPatch))
-	}
-
-	// Command-line flags
-	category := flag.String("category", "", "Category of presets to generate (e.g. Lead, Pad)")
+	// flags
+	category := flag.String("category", "", "Category of presets to generate (e.g. Lead)")
 	count := flag.Int("count", 1, "Number of presets to generate")
-	single := flag.Bool("single", true, "Export presets in a single SysEx file (default true)")
+	single := flag.Bool("single", true, "Export in a single SysEx file")
 	flag.Parse()
 
-	// Validate category input
+	// validate category
 	if *category == "" {
 		fmt.Println("Error: --category is required.")
 		printAvailableCategories()
@@ -87,89 +88,114 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Load category JSON
+	// load and parse category JSON
 	jsonPath := fmt.Sprintf("categories/%s.json", *category)
-	data, err := fs.ReadFile(categoryFS, jsonPath)
+	raw, err := fs.ReadFile(categoryFS, jsonPath)
 	if err != nil {
 		log.Fatalf("failed to read category JSON: %v", err)
 	}
 	var params map[string]ParamInfo
-	if err := json.Unmarshal(data, &params); err != nil {
+	if err := json.Unmarshal(raw, &params); err != nil {
 		log.Fatalf("failed to parse category JSON: %v", err)
 	}
 
-	// Load and compile JSON Schema
+	// validate category JSON against schema
 	schemaLoader := gojsonschema.NewBytesLoader(schemaData)
 	schema, err := gojsonschema.NewSchema(schemaLoader)
 	if err != nil {
 		log.Fatalf("failed to compile JSON schema: %v", err)
 	}
+	// extract schema properties
+	var schemaStruct struct {
+		Properties map[string]propSchema `json:"properties"`
+	}
+	if err := json.Unmarshal(schemaData, &schemaStruct); err != nil {
+		log.Fatalf("failed to parse JSON schema: %v", err)
+	}
+	schemaProps := schemaStruct.Properties
+	for name := range params {
+		if _, exists := schemaProps[name]; !exists {
+			log.Fatalf("category JSON contains unknown parameter '%s' not in schema", name)
+		}
+	}
 
-	// Ensure output directory
+	// build allowed values per parameter
+	allowed := make(map[string][]int, len(params))
+	for pname, info := range params {
+		minVal, maxVal := info.Min, info.Max
+		ps := schemaProps[pname]
+		if ps.Minimum > minVal {
+			minVal = ps.Minimum
+		}
+		if ps.Maximum < maxVal {
+			maxVal = ps.Maximum
+		}
+		// ensure at least one value
+		if maxVal < minVal {
+			maxVal = minVal
+		}
+		countVals := maxVal - minVal + 1
+		vals := make([]int, countVals)
+		for i := 0; i < countVals; i++ {
+			vals[i] = minVal + i
+		}
+		allowed[pname] = vals
+	}
+
+	// prepare output dir
 	outDir := "presets"
 	if err := os.MkdirAll(outDir, 0755); err != nil {
 		log.Fatalf("failed to create presets directory: %v", err)
 	}
 
-	// Generate unique presets
-	var patches [][]byte
-	var patchNames []string
-	names := make(map[string]struct{})
-	configs := make(map[string]struct{})
+	// generate unique patches with validation
+	patches := make([][]byte, 0, *count)
+	namesList := make([]string, 0, *count)
+	seen := make(map[string]struct{})
 
 	for len(patches) < *count {
-		// Randomize parameters
-		config := make(map[string]int)
-		for pname, info := range params {
-			config[pname] = rand.Intn(info.Max-info.Min+1) + info.Min
+		cfg := make(map[string]int, len(allowed))
+		for pname, vals := range allowed {
+			cfg[pname] = vals[rand.Intn(len(vals))]
 		}
-		// Validate and ensure distinct
-		result, _ := schema.Validate(gojsonschema.NewGoLoader(config))
-		if !result.Valid() {
+		// validate config
+		r, _ := schema.Validate(gojsonschema.NewGoLoader(cfg))
+		if !r.Valid() {
 			continue
 		}
-		key := string(mustJSON(config))
-		if _, exists := configs[key]; exists {
+		key := configKey(cfg)
+		if _, exists := seen[key]; exists {
 			continue
 		}
-		configs[key] = struct{}{}
+		seen[key] = struct{}{}
 
-		// Unique, capitalized name
-		rawName := uniqueName(names)
+		rawName := uniqueName(seen)
 		name := strings.Title(strings.ToLower(rawName))
-		names[name] = struct{}{}
-
-		// Build patch
-		patch := buildPatch(name, catCode, params, config)
-		patches = append(patches, patch)
-		patchNames = append(patchNames, name)
+		namesList = append(namesList, name)
+		patches = append(patches, buildPatch(name, catCode, params, cfg))
 	}
 
-	// Use Unix timestamp for file names
-	timestamp := strconv.FormatInt(time.Now().Unix(), 10)
-	firstName := patchNames[0]
+	// output files
+	timeStr := strconv.FormatInt(time.Now().Unix(), 10)
+	first := namesList[0]
+	var base string
+	if *count > 1 {
+		base = fmt.Sprintf("%s_%d_%s_%s", *category, *count, first, timeStr)
+	} else {
+		base = fmt.Sprintf("%s_%s_%s", *category, first, timeStr)
+	}
 
 	if *single {
-		// Single file name using category prefix and Unix timestamp
-		n := *count
-		var base string
-		if n > 1 {
-			base = fmt.Sprintf("%s_%d_%s_%s", *category, n, firstName, timestamp)
-		} else {
-			base = fmt.Sprintf("%s_%s_%s", *category, firstName, timestamp)
-		}
 		outPath := filepath.Join(outDir, base+".syx")
 		if err := os.WriteFile(outPath, concat(patches), 0644); err != nil {
 			log.Fatalf("failed to write %s: %v", outPath, err)
 		}
 		fmt.Printf("Wrote %d preset(s) to %s\n", *count, outPath)
 	} else {
-		// Multiple files
-		for i, patch := range patches {
-			fname := fmt.Sprintf("%s_%02d_%s.syx", firstName, i+1, timestamp)
-			outPath := filepath.Join(outDir, fname)
-			if err := os.WriteFile(outPath, patch, 0644); err != nil {
-				log.Fatalf("failed to write %s: %v", outPath, err)
+		for i, p := range patches {
+			fname := fmt.Sprintf("%s_%02d_%s.syx", first, i+1, timeStr)
+			if err := os.WriteFile(filepath.Join(outDir, fname), p, 0644); err != nil {
+				log.Fatalf("failed to write %s: %v", fname, err)
 			}
 		}
 		fmt.Printf("Wrote %d presets to %s directory\n", *count, outDir)
@@ -185,30 +211,30 @@ func printAvailableCategories() {
 	fmt.Println("Available categories:", strings.Join(keys, ", "))
 }
 
-func mustJSON(v interface{}) []byte {
-	b, _ := json.Marshal(v)
-	return b
+func configKey(cfg map[string]int) string {
+	b, _ := json.Marshal(cfg)
+	return string(b)
 }
 
 func uniqueName(existing map[string]struct{}) string {
 	for {
-		name := randomdata.Adjective()
-		if len(name) > 8 {
-			name = name[:8]
+		n := randomdata.Adjective()
+		if len(n) > 8 {
+			n = n[:8]
 		}
-		if _, used := existing[name]; !used {
-			return name
+		if _, ok := existing[n]; !ok {
+			return n
 		}
 	}
 }
 
-func buildPatch(name string, catCode byte, params map[string]ParamInfo, config map[string]int) []byte {
+func buildPatch(name string, catCode byte, params map[string]ParamInfo, cfg map[string]int) []byte {
 	patch := make([]byte, len(initPatch))
 	copy(patch, initPatch)
-	// Header & footer
+	// fixed header
 	patch[0], patch[1], patch[2], patch[3], patch[4] = 0xF0, 0x00, 0x21, 0x22, 0x4D
 	patch[5], patch[6], patch[7] = 0x02, 0x03, 0x09
-	// Name
+	// name
 	for i := 0; i < 8; i++ {
 		if i < len(name) {
 			patch[8+i] = name[i]
@@ -216,14 +242,14 @@ func buildPatch(name string, catCode byte, params map[string]ParamInfo, config m
 			patch[8+i] = 0x20
 		}
 	}
-	// Category & zeros
+	// category & reserved
 	patch[16], patch[17], patch[18], patch[19] = catCode, 0x00, 0x00, 0x00
-	// Params
-	for pname, val := range config {
-		offset := params[pname].SysexOffset
-		patch[offset] = byte(val)
+	// params
+	for pname, val := range cfg {
+		o := params[pname].SysexOffset
+		patch[o] = byte(val)
 	}
-	// End
+	// end
 	patch[len(patch)-1] = 0xF7
 	return patch
 }
