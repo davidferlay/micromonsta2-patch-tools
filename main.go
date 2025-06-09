@@ -10,6 +10,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -73,12 +74,17 @@ func main() {
 	single := flag.Bool("single", true, "Export presets in a single SysEx file (default true)")
 	flag.Parse()
 
+	// Validate category input
 	if *category == "" {
-		log.Fatalf("--category is required")
+		fmt.Println("Error: --category is required.")
+		printAvailableCategories()
+		os.Exit(1)
 	}
 	catCode, ok := categoryCodes[*category]
 	if !ok {
-		log.Fatalf("unknown category '%s'", *category)
+		fmt.Printf("Error: unknown category '%s'.\n", *category)
+		printAvailableCategories()
+		os.Exit(1)
 	}
 
 	// Load category JSON
@@ -168,6 +174,15 @@ func main() {
 		}
 		fmt.Printf("Wrote %d presets to %s directory\n", *count, outDir)
 	}
+}
+
+func printAvailableCategories() {
+	keys := make([]string, 0, len(categoryCodes))
+	for k := range categoryCodes {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	fmt.Println("Available categories:", strings.Join(keys, ", "))
 }
 
 func mustJSON(v interface{}) []byte {
