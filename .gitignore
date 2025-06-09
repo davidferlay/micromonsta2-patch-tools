@@ -1,4 +1,5 @@
 # Ignore the directory and any file starting with its name
+micromonsta2-patch-tools
 micromonsta2-patch-tools/
 micromonsta2-patch-tools.*
 

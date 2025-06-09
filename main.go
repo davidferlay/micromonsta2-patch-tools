@@ -10,6 +10,8 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Pallinder/go-randomdata"
@@ -126,8 +128,9 @@ func main() {
 		}
 		configs[key] = struct{}{}
 
-		// Unique name
-		name := uniqueName(names)
+		// Unique, capitalized name
+		rawName := uniqueName(names)
+		name := strings.Title(strings.ToLower(rawName))
 		names[name] = struct{}{}
 
 		// Build patch
@@ -136,18 +139,18 @@ func main() {
 		patchNames = append(patchNames, name)
 	}
 
-	// Timestamp and first name
-	timestamp := time.Now().Format("2006-01-02_15-04-05")
+	// Use Unix timestamp for file names
+	timestamp := strconv.FormatInt(time.Now().Unix(), 10)
 	firstName := patchNames[0]
 
 	if *single {
-		// Single file name
-		base := "generated"
+		// Single file name using category prefix and Unix timestamp
 		n := *count
+		var base string
 		if n > 1 {
-			base = fmt.Sprintf("generated_%d_%s_%s", n, firstName, timestamp)
+			base = fmt.Sprintf("%s_%d_%s_%s", *category, n, firstName, timestamp)
 		} else {
-			base = fmt.Sprintf("generated_%s_%s", firstName, timestamp)
+			base = fmt.Sprintf("%s_%s_%s", *category, firstName, timestamp)
 		}
 		outPath := filepath.Join(outDir, base+".syx")
 		if err := os.WriteFile(outPath, concat(patches), 0644); err != nil {
@@ -157,8 +160,7 @@ func main() {
 	} else {
 		// Multiple files
 		for i, patch := range patches {
-			extra := fmt.Sprintf("_%02d_%s.syx", i+1, timestamp)
-			fname := firstName + extra
+			fname := fmt.Sprintf("%s_%02d_%s.syx", firstName, i+1, timestamp)
 			outPath := filepath.Join(outDir, fname)
 			if err := os.WriteFile(outPath, patch, 0644); err != nil {
 				log.Fatalf("failed to write %s: %v", outPath, err)
