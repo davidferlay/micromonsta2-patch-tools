@@ -130,7 +130,6 @@ func main() {
 		if ps.Maximum < maxVal {
 			maxVal = ps.Maximum
 		}
-		// ensure at least one value
 		if maxVal < minVal {
 			maxVal = minVal
 		}
@@ -170,9 +169,10 @@ func main() {
 		seen[key] = struct{}{}
 
 		rawName := uniqueName(seen)
-		name := strings.Title(strings.ToLower(rawName))
-		namesList = append(namesList, name)
-		patches = append(patches, buildPatch(name, catCode, params, cfg))
+		capName := strings.Title(strings.ToLower(rawName))
+		namesList = append(namesList, capName)
+		// build patch with lowercase name for SysEx
+		patches = append(patches, buildPatch(rawName, catCode, params, cfg))
 	}
 
 	// output files
@@ -234,7 +234,7 @@ func buildPatch(name string, catCode byte, params map[string]ParamInfo, cfg map[
 	// fixed header
 	patch[0], patch[1], patch[2], patch[3], patch[4] = 0xF0, 0x00, 0x21, 0x22, 0x4D
 	patch[5], patch[6], patch[7] = 0x02, 0x03, 0x09
-	// name
+	// name (lowercase)
 	for i := 0; i < 8; i++ {
 		if i < len(name) {
 			patch[8+i] = name[i]
