@@ -22,8 +22,8 @@ import (
 //go:embed P292_Init.syx
 var initPatch []byte
 
-//go:embed categories/*.json
-var categoryFS embed.FS
+//go:embed specs/*.json
+var specsFS embed.FS
 
 //go:embed micromonsta_patch_schema.json
 var schemaData []byte
@@ -70,6 +70,7 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	// flags
+	specDir := flag.String("specs", "specs", "Directory containing category JSON spec files")
 	category := flag.String("category", "", "Category of presets to generate (e.g. Lead)")
 	count := flag.Int("count", 1, "Number of presets to generate")
 	flag.Parse()
@@ -87,18 +88,18 @@ func main() {
 		os.Exit(1)
 	}
 
-	// load and parse category JSON
-	jsonPath := fmt.Sprintf("categories/%s.json", *category)
-	raw, err := fs.ReadFile(categoryFS, jsonPath)
+	// load and parse spec JSON
+	jsonPath := fmt.Sprintf("%s/%s.json", *specDir, *category)
+	raw, err := fs.ReadFile(specsFS, filepath.ToSlash(jsonPath))
 	if err != nil {
-		log.Fatalf("failed to read category JSON: %v", err)
+		log.Fatalf("failed to read spec JSON '%s': %v", jsonPath, err)
 	}
 	var params map[string]ParamInfo
 	if err := json.Unmarshal(raw, &params); err != nil {
-		log.Fatalf("failed to parse category JSON: %v", err)
+		log.Fatalf("failed to parse spec JSON: %v", err)
 	}
 
-	// validate category JSON against schema
+	// validate spec JSON against schema
 	schemaLoader := gojsonschema.NewBytesLoader(schemaData)
 	schema, err := gojsonschema.NewSchema(schemaLoader)
 	if err != nil {
@@ -113,7 +114,7 @@ func main() {
 	schemaProps := schemaStruct.Properties
 	for name := range params {
 		if _, exists := schemaProps[name]; !exists {
-			log.Fatalf("category JSON contains unknown parameter '%s' not in schema", name)
+			log.Fatalf("spec JSON contains unknown parameter '%s' not in schema", name)
 		}
 	}
 
