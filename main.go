@@ -90,7 +90,13 @@ func main() {
 
 	// load and parse spec JSON
 	jsonPath := fmt.Sprintf("%s/%s.json", *specDir, *category)
-	raw, err := fs.ReadFile(specsFS, filepath.ToSlash(jsonPath))
+	var raw []byte
+	var err error
+	if *specDir == "specs" {
+		raw, err = fs.ReadFile(specsFS, filepath.ToSlash(jsonPath))
+	} else {
+		raw, err = os.ReadFile(jsonPath)
+	}
 	if err != nil {
 		log.Fatalf("failed to read spec JSON '%s': %v", jsonPath, err)
 	}
@@ -222,6 +228,7 @@ func configKey(cfg map[string]int) string {
 
 func uniqueName(existing map[string]struct{}) string {
 	for {
+		// generate new raw name
 		n := randomdata.Adjective()
 		if len(n) > 8 {
 			n = n[:8]
