@@ -210,7 +210,8 @@ func runGenerate(count int, category string, catCode byte, params map[string]Par
 		// combined file
 		combined := fmt.Sprintf("%s_%s_bundle_%s.syx", category, bundleName, timeStr)
 		combinedPath := filepath.Join(subDir, combined)
-		ioutil.WriteFile(combinedPath, concat(patches), 0644)
+		combinedData := concat(patches)
+		ioutil.WriteFile(combinedPath, combinedData, 0644)
 		fmt.Printf("Wrote combined %d presets to %s\n", count, combinedPath)
 
 		// individual patches
@@ -220,16 +221,10 @@ func runGenerate(count int, category string, catCode byte, params map[string]Par
 		}
 		fmt.Printf("Wrote %d individual presets to %s\n", count, subDir)
 
-		// descriptor text file
-		descPath := strings.TrimSuffix(combinedPath, ".syx") + ".txt"
-		f, _ := os.Create(descPath)
-		defer f.Close()
-		tw := bufio.NewWriter(f)
-		for i, name := range names {
-			fmt.Fprintf(tw, "%2d: %s (%s)\n", i+1, name, category)
+		// descriptor text file using unified function
+		if err := writeDescriptorFile(combinedPath, combinedData); err != nil {
+			log.Printf("Warning: %v", err)
 		}
-		tw.Flush()
-		fmt.Printf("Wrote descriptor to %s\n", descPath)
 	} else {
 		// single preset
 		path := filepath.Join("presets", fmt.Sprintf("%s_%s_%s.syx", category, names[0], timeStr))
@@ -290,11 +285,9 @@ func runEdit(editFile, replaceList string, catCode byte, params map[string]Param
 			fmt.Printf("Warning: position %d out of range\n", idx+1)
 			continue
 		}
-		patches, names := generatePatches(1, catCode, params, allowed, schema)
+		patches, _ := generatePatches(1, catCode, params, allowed, schema)
 		off := idx * patchSize
 		copy(data[off:off+patchSize], patches[0])
-		// Update the existing names array with the new name
-		existingNames[idx] = names[0]
 	}
 
 	err = os.WriteFile(editFile, data, 0644)
@@ -303,35 +296,14 @@ func runEdit(editFile, replaceList string, catCode byte, params map[string]Param
 	}
 	fmt.Printf("Replaced %d patches in %s\n", len(targets), editFile)
 
-	// write descriptor if multiple patches
+	// write descriptor using unified function
+	if err := writeDescriptorFile(editFile, data); err != nil {
+		log.Printf("Warning: %v", err)
+	}
+
+	// Update output message for consistency
 	if n > 1 {
-		descPath := strings.TrimSuffix(editFile, ".syx") + ".txt"
-		f, err := os.Create(descPath)
-		if err != nil {
-			log.Printf("Warning: failed to create descriptor file: %v", err)
-			return
-		}
-		defer f.Close()
-
-		w := bufio.NewWriter(f)
-		for i := 0; i < n; i++ {
-			// Re-extract name from updated data to ensure accuracy
-			nameOff := i*patchSize + 8
-			name := strings.TrimRight(string(data[nameOff:nameOff+8]), " \x00")
-
-			// Extract category
-			catByte := data[i*patchSize+16]
-			catName := "Unknown"
-			for k, v := range categoryCodes {
-				if v == catByte {
-					catName = k
-					break
-				}
-			}
-			fmt.Fprintf(w, "%2d: %s (%s)\n", i+1, name, catName)
-		}
-		w.Flush()
-		fmt.Printf("Wrote descriptor to %s\n", descPath)
+		fmt.Printf("Updated descriptor file: %s\n", strings.TrimSuffix(editFile, ".syx")+".txt")
 	}
 }
 
@@ -367,6 +339,42 @@ func parseReplaceList(list string, existingNames []string) []replaceTarget {
 	return t
 }
 
+// writeDescriptorFile creates a descriptor text file for a sysex file
+func writeDescriptorFile(sysexPath string, data []byte) error {
+	n := len(data) / patchSize
+	if n <= 1 {
+		return nil // Don't create descriptor for single patches
+	}
+
+	descPath := strings.TrimSuffix(sysexPath, ".syx") + ".txt"
+	f, err := os.Create(descPath)
+	if err != nil {
+		return fmt.Errorf("failed to create descriptor file: %v", err)
+	}
+	defer f.Close()
+
+	w := bufio.NewWriter(f)
+	for i := 0; i < n; i++ {
+		// Extract name from sysex data
+		nameOff := i*patchSize + 8
+		name := strings.TrimRight(string(data[nameOff:nameOff+8]), " \x00")
+
+		// Extract category
+		catByte := data[i*patchSize+16]
+		catName := "Unknown"
+		for k, v := range categoryCodes {
+			if v == catByte {
+				catName = k
+				break
+			}
+		}
+		fmt.Fprintf(w, "%2d: %s (%s)\n", i+1, name, catName)
+	}
+	w.Flush()
+	fmt.Printf("Wrote descriptor to %s\n", descPath)
+	return nil
+}
+
 func generatePatches(count int, catCode byte, params map[string]ParamInfo, allowed map[string][]int, schema *gojsonschema.Schema) ([][]byte, []string) {
 	patches := make([][]byte, 0, count)
 	names := make([]string, 0, count)
@@ -386,7 +394,7 @@ func generatePatches(count int, catCode byte, params map[string]ParamInfo, allow
 		}
 		seen[key] = struct{}{}
 		raw := uniqueName(seen)
-		names = append(names, strings.Title(strings.ToLower(raw)))
+		names = append(names, raw)
 		patches = append(patches, buildPatch(raw, catCode, params, cfg))
 	}
 	return patches, names
