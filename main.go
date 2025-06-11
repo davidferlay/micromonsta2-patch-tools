@@ -81,6 +81,7 @@ func main() {
 	replace := flag.String("replace", "", "Comma-separated preset positions or names to replace")
 	describeFile := flag.String("describe", "", "SysEx file to describe contents")
 	splitFile := flag.String("split", "", "SysEx file to split into individual preset files")
+	groupFiles := flag.String("group", "", "Comma-separated list of SysEx files to group into a single bundle")
 	flag.Parse()
 
 	// describe mode
@@ -92,6 +93,12 @@ func main() {
 	// split mode
 	if *splitFile != "" {
 		runSplit(*splitFile)
+		return
+	}
+
+	// group mode
+	if *groupFiles != "" {
+		runGroup(*groupFiles)
 		return
 	}
 
@@ -170,6 +177,147 @@ func main() {
 		flag.Usage()
 		os.Exit(1)
 	}
+}
+
+func runGroup(fileList string) {
+	// Parse file list
+	filePaths := strings.Split(fileList, ",")
+	var validFiles []string
+
+	// Validate files and collect valid ones
+	for _, path := range filePaths {
+		path = strings.TrimSpace(path)
+		if path == "" {
+			continue
+		}
+
+		// Check if file exists and is readable
+		if _, err := os.Stat(path); err != nil {
+			fmt.Printf("Warning: skipping '%s' - %v\n", path, err)
+			continue
+		}
+
+		// Check if file size is valid (multiple of patchSize)
+		info, _ := os.Stat(path)
+		if info.Size()%patchSize != 0 {
+			fmt.Printf("Warning: skipping '%s' - invalid file size (%d bytes, not multiple of %d)\n",
+				path, info.Size(), patchSize)
+			continue
+		}
+
+		validFiles = append(validFiles, path)
+	}
+
+	if len(validFiles) == 0 {
+		fmt.Println("Error: no valid sysex files found to group")
+		return
+	}
+
+	fmt.Printf("Grouping %d sysex files into a single bundle:\n", len(validFiles))
+
+	// Read and combine all presets
+	var allPresets [][]byte
+	var totalPresets int
+
+	for _, path := range validFiles {
+		data, err := ioutil.ReadFile(path)
+		if err != nil {
+			fmt.Printf("Warning: failed to read '%s': %v\n", path, err)
+			continue
+		}
+
+		numPresets := len(data) / patchSize
+		fmt.Printf("  %s: %d preset(s)\n", filepath.Base(path), numPresets)
+
+		// Extract individual presets from this file
+		for i := 0; i < numPresets; i++ {
+			off := i * patchSize
+			preset := make([]byte, patchSize)
+			copy(preset, data[off:off+patchSize])
+			allPresets = append(allPresets, preset)
+		}
+		totalPresets += numPresets
+	}
+
+	if totalPresets == 0 {
+		fmt.Println("Error: no presets found in any files")
+		return
+	}
+
+	// Check for name conflicts and report them
+	nameConflicts := findNameConflicts(allPresets)
+	if len(nameConflicts) > 0 {
+		fmt.Printf("Warning: found %d duplicate preset names:\n", len(nameConflicts))
+		for name, count := range nameConflicts {
+			fmt.Printf("  '%s' appears %d times\n", name, count)
+		}
+		fmt.Println("Proceeding anyway - duplicates will be preserved")
+	}
+
+	// Create output directory and files
+	timeStr := strconv.FormatInt(time.Now().Unix(), 10)
+	bundleRaw := uniqueName(make(map[string]struct{}))
+	bundleName := strings.Title(strings.ToLower(bundleRaw))
+	subDir := filepath.Join("presets", bundleName)
+	err := os.MkdirAll(subDir, 0755)
+	if err != nil {
+		log.Fatalf("failed to create output directory: %v", err)
+	}
+
+	// Write combined bundle file
+	combined := fmt.Sprintf("%s_grouped_%s.syx", bundleName, timeStr)
+	combinedPath := filepath.Join(subDir, combined)
+	combinedData := concat(allPresets)
+	err = ioutil.WriteFile(combinedPath, combinedData, 0644)
+	if err != nil {
+		log.Fatalf("failed to write combined file: %v", err)
+	}
+
+	fmt.Printf("Wrote combined bundle with %d presets to %s\n", totalPresets, combinedPath)
+
+	// Write individual preset files
+	for _, preset := range allPresets {
+		// Extract name and category
+		name := strings.TrimRight(string(preset[8:16]), " \x00")
+		catByte := preset[16]
+		catName := "Unknown"
+		for k, v := range categoryCodes {
+			if v == catByte {
+				catName = k
+				break
+			}
+		}
+
+		filename := fmt.Sprintf("%s_%s_%s.syx", catName, name, timeStr)
+		filepath := filepath.Join(subDir, filename)
+
+		err = ioutil.WriteFile(filepath, preset, 0644)
+		if err != nil {
+			log.Printf("Warning: failed to write individual preset %s: %v", filename, err)
+		}
+	}
+
+	fmt.Printf("Wrote %d individual preset files to %s\n", totalPresets, subDir)
+
+	// Write descriptor file
+	if err := writeDescriptorFile(combinedPath, combinedData); err != nil {
+		log.Printf("Warning: %v", err)
+	}
+}
+
+func findNameConflicts(presets [][]byte) map[string]int {
+	nameCounts := make(map[string]int)
+	conflicts := make(map[string]int)
+
+	for _, preset := range presets {
+		name := strings.TrimRight(string(preset[8:16]), " \x00")
+		nameCounts[name]++
+		if nameCounts[name] > 1 {
+			conflicts[name] = nameCounts[name]
+		}
+	}
+
+	return conflicts
 }
 
 func runSplit(path string) {
