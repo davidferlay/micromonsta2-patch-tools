@@ -1,0 +1,1552 @@
+{
+  "OSC1_Algo": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 20,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Oscillator 1"
+  },
+  "OSC1_Shape": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 21,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Oscillator 1"
+  },
+  "OSC1_CoarseTune": {
+    "min": 0,
+    "max": 12,
+    "default": 0,
+    "sysex_offset": 22,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "semitones",
+    "section": "Oscillator 1"
+  },
+  "OSC1_FineTune": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 23,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "cents",
+    "section": "Oscillator 1"
+  },
+  "OSC2_Algo": {
+    "min": 64,
+    "max": 74,
+    "default": 67,
+    "sysex_offset": 24,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Oscillator 2"
+  },
+  "OSC2_Shape": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 25,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Oscillator 2"
+  },
+  "OSC2_CoarseTune": {
+    "min": 37,
+    "max": 112,
+    "default": 80,
+    "sysex_offset": 26,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "semitones",
+    "section": "Oscillator 2"
+  },
+  "OSC2_FineTune": {
+    "min": 24,
+    "max": 82,
+    "default": 24,
+    "sysex_offset": 27,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "cents",
+    "section": "Oscillator 2"
+  },
+  "OSC3_Algo": {
+    "min": 24,
+    "max": 24,
+    "default": 24,
+    "sysex_offset": 28,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Oscillator 3"
+  },
+  "OSC3_Shape": {
+    "min": 0,
+    "max": 90,
+    "default": 24,
+    "sysex_offset": 29,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Oscillator 3"
+  },
+  "OSC3_CoarseTune": {
+    "min": 0,
+    "max": 37,
+    "default": 0,
+    "sysex_offset": 30,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "semitones",
+    "section": "Oscillator 3"
+  },
+  "OSC3_FineTune": {
+    "min": 62,
+    "max": 62,
+    "default": 62,
+    "sysex_offset": 31,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "cents",
+    "section": "Oscillator 3"
+  },
+  "MIX1": {
+    "min": 2,
+    "max": 2,
+    "default": 2,
+    "sysex_offset": 32,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "MIX1"
+  },
+  "MIX2": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 33,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "MIX2"
+  },
+  "MIX3": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 34,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "MIX3"
+  },
+  "NZE": {
+    "min": 1,
+    "max": 15,
+    "default": 6,
+    "sysex_offset": 35,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Noise"
+  },
+  "FLT_Type": {
+    "min": 0,
+    "max": 108,
+    "default": 0,
+    "sysex_offset": 36,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Filter"
+  },
+  "FLT_Cutoff": {
+    "min": 40,
+    "max": 70,
+    "default": 64,
+    "sysex_offset": 37,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Filter"
+  },
+  "FLT_Resonance": {
+    "min": 15,
+    "max": 45,
+    "default": 64,
+    "sysex_offset": 38,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Filter"
+  },
+  "FLT_EnvAmt": {
+    "min": 0,
+    "max": 8,
+    "default": 6,
+    "sysex_offset": 39,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Filter"
+  },
+  "FLT_Character": {
+    "min": 0,
+    "max": 112,
+    "default": 0,
+    "sysex_offset": 40,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Filter"
+  },
+  "FLT_KBD": {
+    "min": 52,
+    "max": 71,
+    "default": 64,
+    "sysex_offset": 41,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Filter"
+  },
+  "FLT_Tracking": {
+    "min": 51,
+    "max": 59,
+    "default": 59,
+    "sysex_offset": 42,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Filter"
+  },
+  "FLT_FM": {
+    "min": 0,
+    "max": 17,
+    "default": 10,
+    "sysex_offset": 43,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Filter"
+  },
+  "UNUSED_44": {
+    "min": 0,
+    "max": 108,
+    "default": 0,
+    "sysex_offset": 44,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "UNUSED"
+  },
+  "UNUSED_45": {
+    "min": 40,
+    "max": 71,
+    "default": 52,
+    "sysex_offset": 45,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "UNUSED"
+  },
+  "DRV": {
+    "min": 51,
+    "max": 76,
+    "default": 64,
+    "sysex_offset": 46,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "DRV"
+  },
+  "Mix_Level": {
+    "min": 62,
+    "max": 127,
+    "default": 127,
+    "sysex_offset": 47,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Mix"
+  },
+  "ENV1_Attack": {
+    "min": 46,
+    "max": 127,
+    "default": 0,
+    "sysex_offset": 48,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "ms",
+    "section": "ENV1"
+  },
+  "ENV1_Decay": {
+    "min": 0,
+    "max": 127,
+    "default": 0,
+    "sysex_offset": 49,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "ms",
+    "section": "ENV1"
+  },
+  "ENV1_Sustain": {
+    "min": 0,
+    "max": 7,
+    "default": 0,
+    "sysex_offset": 50,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "ENV1"
+  },
+  "ENV1_Release": {
+    "min": 0,
+    "max": 1,
+    "default": 1,
+    "sysex_offset": 51,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "ms",
+    "section": "ENV1"
+  },
+  "ENV2_Attack": {
+    "min": 0,
+    "max": 122,
+    "default": 127,
+    "sysex_offset": 52,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "ms",
+    "section": "ENV2"
+  },
+  "ENV2_Decay": {
+    "min": 0,
+    "max": 100,
+    "default": 0,
+    "sysex_offset": 53,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "ms",
+    "section": "ENV2"
+  },
+  "ENV2_Sustain": {
+    "min": 0,
+    "max": 1,
+    "default": 1,
+    "sysex_offset": 54,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "ENV2"
+  },
+  "ENV2_Release": {
+    "min": 0,
+    "max": 97,
+    "default": 0,
+    "sysex_offset": 55,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "ms",
+    "section": "ENV2"
+  },
+  "ENV3_Attack": {
+    "min": 0,
+    "max": 100,
+    "default": 0,
+    "sysex_offset": 56,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "ms",
+    "section": "ENV3"
+  },
+  "ENV3_Decay": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 57,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "ms",
+    "section": "ENV3"
+  },
+  "ENV3_Sustain": {
+    "min": 0,
+    "max": 40,
+    "default": 0,
+    "sysex_offset": 58,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "ENV3"
+  },
+  "ENV3_Release": {
+    "min": 0,
+    "max": 92,
+    "default": 0,
+    "sysex_offset": 59,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "ms",
+    "section": "ENV3"
+  },
+  "LFO1_Waveform": {
+    "min": 0,
+    "max": 82,
+    "default": 0,
+    "sysex_offset": 60,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "LFO 1"
+  },
+  "LFO1_Speed": {
+    "min": 80,
+    "max": 127,
+    "default": 127,
+    "sysex_offset": 61,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "LFO 1"
+  },
+  "LFO1_Mode": {
+    "min": 37,
+    "max": 80,
+    "default": 0,
+    "sysex_offset": 62,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "LFO 1"
+  },
+  "LFO1_UNUSED": {
+    "min": 0,
+    "max": 105,
+    "default": 42,
+    "sysex_offset": 63,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "LFO 1"
+  },
+  "LFO2_Waveform": {
+    "min": 60,
+    "max": 110,
+    "default": 64,
+    "sysex_offset": 64,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "LFO 2"
+  },
+  "LFO2_Speed": {
+    "min": 0,
+    "max": 100,
+    "default": 32,
+    "sysex_offset": 65,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "LFO 2"
+  },
+  "LFO2_Mode": {
+    "min": 16,
+    "max": 110,
+    "default": 32,
+    "sysex_offset": 66,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "LFO 2"
+  },
+  "LFO2_UNUSED": {
+    "min": 0,
+    "max": 104,
+    "default": 42,
+    "sysex_offset": 67,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "LFO 2"
+  },
+  "LFO3_Waveform": {
+    "min": 0,
+    "max": 113,
+    "default": 64,
+    "sysex_offset": 68,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "LFO3"
+  },
+  "LFO3_Speed": {
+    "min": 0,
+    "max": 127,
+    "default": 32,
+    "sysex_offset": 69,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "LFO3"
+  },
+  "LFO3_Mode": {
+    "min": 32,
+    "max": 80,
+    "default": 32,
+    "sysex_offset": 70,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "LFO3"
+  },
+  "LFO3_UNUSED": {
+    "min": 0,
+    "max": 16,
+    "default": 0,
+    "sysex_offset": 71,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "LFO3"
+  },
+  "Matrix1_Dest": {
+    "min": 0,
+    "max": 1,
+    "default": 0,
+    "sysex_offset": 72,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix1"
+  },
+  "Matrix1_Source": {
+    "min": 6,
+    "max": 45,
+    "default": 64,
+    "sysex_offset": 73,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Matrix1"
+  },
+  "Matrix1_Amount": {
+    "min": 0,
+    "max": 3,
+    "default": 3,
+    "sysex_offset": 74,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix1"
+  },
+  "Matrix1_UNUSED": {
+    "min": 0,
+    "max": 15,
+    "default": 0,
+    "sysex_offset": 75,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix1"
+  },
+  "Matrix2_Dest": {
+    "min": 0,
+    "max": 1,
+    "default": 0,
+    "sysex_offset": 76,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix2"
+  },
+  "Matrix2_Source": {
+    "min": 2,
+    "max": 119,
+    "default": 48,
+    "sysex_offset": 77,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Matrix2"
+  },
+  "Matrix2_Amount": {
+    "min": 0,
+    "max": 2,
+    "default": 0,
+    "sysex_offset": 78,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix2"
+  },
+  "Matrix2_UNUSED": {
+    "min": 0,
+    "max": 16,
+    "default": 0,
+    "sysex_offset": 79,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix2"
+  },
+  "Matrix3_Dest": {
+    "min": 0,
+    "max": 1,
+    "default": 0,
+    "sysex_offset": 80,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix3"
+  },
+  "Matrix3_Source": {
+    "min": 8,
+    "max": 120,
+    "default": 48,
+    "sysex_offset": 81,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Matrix3"
+  },
+  "Matrix3_Amount": {
+    "min": 0,
+    "max": 3,
+    "default": 0,
+    "sysex_offset": 82,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix3"
+  },
+  "Matrix3_UNUSED": {
+    "min": 18,
+    "max": 22,
+    "default": 21,
+    "sysex_offset": 83,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix3"
+  },
+  "Matrix4_Dest": {
+    "min": 1,
+    "max": 12,
+    "default": 1,
+    "sysex_offset": 84,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix4"
+  },
+  "Matrix4_Source": {
+    "min": 0,
+    "max": 1,
+    "default": 1,
+    "sysex_offset": 85,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Matrix4"
+  },
+  "Matrix4_Amount": {
+    "min": 3,
+    "max": 99,
+    "default": 8,
+    "sysex_offset": 86,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix4"
+  },
+  "Matrix4_UNUSED": {
+    "min": 16,
+    "max": 35,
+    "default": 0,
+    "sysex_offset": 87,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix4"
+  },
+  "Matrix5_Dest": {
+    "min": 3,
+    "max": 18,
+    "default": 0,
+    "sysex_offset": 88,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix5"
+  },
+  "Matrix5_Source": {
+    "min": 0,
+    "max": 1,
+    "default": 1,
+    "sysex_offset": 89,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Matrix5"
+  },
+  "Matrix5_Amount": {
+    "min": 4,
+    "max": 88,
+    "default": 0,
+    "sysex_offset": 90,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix5"
+  },
+  "Matrix5_UNUSED": {
+    "min": 0,
+    "max": 35,
+    "default": 0,
+    "sysex_offset": 91,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix5"
+  },
+  "Matrix6_Dest": {
+    "min": 1,
+    "max": 12,
+    "default": 0,
+    "sysex_offset": 92,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix6"
+  },
+  "Matrix6_Source": {
+    "min": 1,
+    "max": 1,
+    "default": 1,
+    "sysex_offset": 93,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Matrix6"
+  },
+  "Matrix6_Amount": {
+    "min": 0,
+    "max": 99,
+    "default": 0,
+    "sysex_offset": 94,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix6"
+  },
+  "Matrix6_UNUSED": {
+    "min": 0,
+    "max": 37,
+    "default": 0,
+    "sysex_offset": 95,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix6"
+  },
+  "Matrix7_Dest": {
+    "min": 1,
+    "max": 12,
+    "default": 0,
+    "sysex_offset": 96,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix7"
+  },
+  "Matrix7_Source": {
+    "min": 1,
+    "max": 1,
+    "default": 1,
+    "sysex_offset": 97,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Matrix7"
+  },
+  "Matrix7_Amount": {
+    "min": 0,
+    "max": 72,
+    "default": 0,
+    "sysex_offset": 98,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix7"
+  },
+  "Matrix7_UNUSED": {
+    "min": 0,
+    "max": 28,
+    "default": 0,
+    "sysex_offset": 99,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix7"
+  },
+  "Matrix8_Dest": {
+    "min": 1,
+    "max": 18,
+    "default": 0,
+    "sysex_offset": 100,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix8"
+  },
+  "Matrix8_Source": {
+    "min": 1,
+    "max": 1,
+    "default": 1,
+    "sysex_offset": 101,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Matrix8"
+  },
+  "Matrix8_Amount": {
+    "min": 0,
+    "max": 71,
+    "default": 0,
+    "sysex_offset": 102,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix8"
+  },
+  "Matrix8_UNUSED": {
+    "min": 0,
+    "max": 24,
+    "default": 0,
+    "sysex_offset": 103,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix8"
+  },
+  "Matrix9_Dest": {
+    "min": 1,
+    "max": 18,
+    "default": 0,
+    "sysex_offset": 104,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix9"
+  },
+  "Matrix9_Source": {
+    "min": 1,
+    "max": 1,
+    "default": 1,
+    "sysex_offset": 105,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Matrix9"
+  },
+  "Matrix9_Amount": {
+    "min": 0,
+    "max": 64,
+    "default": 0,
+    "sysex_offset": 106,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix9"
+  },
+  "Matrix9_UNUSED": {
+    "min": 0,
+    "max": 34,
+    "default": 0,
+    "sysex_offset": 107,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix9"
+  },
+  "Matrix10_Dest": {
+    "min": 1,
+    "max": 18,
+    "default": 0,
+    "sysex_offset": 108,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix10"
+  },
+  "Matrix10_Source": {
+    "min": 0,
+    "max": 1,
+    "default": 1,
+    "sysex_offset": 109,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Matrix10"
+  },
+  "Matrix10_Amount": {
+    "min": 0,
+    "max": 105,
+    "default": 0,
+    "sysex_offset": 110,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix10"
+  },
+  "Matrix10_UNUSED": {
+    "min": 0,
+    "max": 22,
+    "default": 0,
+    "sysex_offset": 111,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Matrix10"
+  },
+  "Lag1_Source": {
+    "min": 1,
+    "max": 18,
+    "default": 0,
+    "sysex_offset": 112,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Lag1"
+  },
+  "Lag1_UN1": {
+    "min": 0,
+    "max": 1,
+    "default": 1,
+    "sysex_offset": 113,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Lag1"
+  },
+  "Lag1_Amount": {
+    "min": 0,
+    "max": 95,
+    "default": 0,
+    "sysex_offset": 114,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Lag1"
+  },
+  "Lag1_UN2": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 115,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Lag1"
+  },
+  "Lag2_Source": {
+    "min": 1,
+    "max": 1,
+    "default": 0,
+    "sysex_offset": 116,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Lag2"
+  },
+  "Lag2_UN1": {
+    "min": 1,
+    "max": 1,
+    "default": 1,
+    "sysex_offset": 117,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Lag2"
+  },
+  "Lag2_Amount": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 118,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Lag2"
+  },
+  "Lag2_UN2": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 119,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Lag2"
+  },
+  "Mult1_SRC_A": {
+    "min": 1,
+    "max": 1,
+    "default": 0,
+    "sysex_offset": 120,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Mult1"
+  },
+  "Mult1_UN1": {
+    "min": 1,
+    "max": 1,
+    "default": 1,
+    "sysex_offset": 121,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Mult1"
+  },
+  "Mult1_SRC_B": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 122,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Mult1"
+  },
+  "Mult1_UN2": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 123,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Mult1"
+  },
+  "Mult2_SRC_A": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 124,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Mult2"
+  },
+  "Mult2_UN1": {
+    "min": 0,
+    "max": 6,
+    "default": 0,
+    "sysex_offset": 125,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Mult2"
+  },
+  "Mult2_SRC_B": {
+    "min": 0,
+    "max": 16,
+    "default": 0,
+    "sysex_offset": 126,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Mult2"
+  },
+  "Mult2_UN2": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 127,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Mult2"
+  },
+  "ARP_Style": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 128,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_Gate": {
+    "min": 0,
+    "max": 83,
+    "default": 0,
+    "sysex_offset": 129,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_OctaveRange": {
+    "min": 1,
+    "max": 1,
+    "default": 1,
+    "sysex_offset": 130,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_Speed": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 131,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_OnOff": {
+    "min": 0,
+    "max": 1,
+    "default": 0,
+    "sysex_offset": 132,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_UN1": {
+    "min": 2,
+    "max": 120,
+    "default": 84,
+    "sysex_offset": 133,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_UN2": {
+    "min": 34,
+    "max": 112,
+    "default": 48,
+    "sysex_offset": 134,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_Latch": {
+    "min": 0,
+    "max": 90,
+    "default": 0,
+    "sysex_offset": 135,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_Step1": {
+    "min": 39,
+    "max": 127,
+    "default": 42,
+    "sysex_offset": 136,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_Step2": {
+    "min": 42,
+    "max": 127,
+    "default": 42,
+    "sysex_offset": 137,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_Step3": {
+    "min": 0,
+    "max": 104,
+    "default": 0,
+    "sysex_offset": 138,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_Step4": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 139,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_Step5": {
+    "min": 64,
+    "max": 64,
+    "default": 64,
+    "sysex_offset": 140,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_Step6": {
+    "min": 7,
+    "max": 7,
+    "default": 7,
+    "sysex_offset": 141,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_Step7": {
+    "min": 0,
+    "max": 3,
+    "default": 0,
+    "sysex_offset": 142,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_Step8": {
+    "min": 0,
+    "max": 3,
+    "default": 0,
+    "sysex_offset": 143,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_Step9": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 144,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_Step10": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 145,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_Step11": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 146,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_Step12": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 147,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_Step13": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 148,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_Step14": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 149,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_Step15": {
+    "min": 0,
+    "max": 4,
+    "default": 3,
+    "sysex_offset": 150,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_Step16": {
+    "min": 3,
+    "max": 3,
+    "default": 3,
+    "sysex_offset": 151,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "IFX_Type": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 152,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "IFX"
+  },
+  "IFX_UN1": {
+    "min": 2,
+    "max": 4,
+    "default": 3,
+    "sysex_offset": 153,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "IFX"
+  },
+  "EQ_Freq": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 154,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "EQ"
+  },
+  "EQ_UN1": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 155,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "EQ"
+  },
+  "Delay_Type": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 156,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Delay"
+  },
+  "Delay_Time": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 157,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Delay"
+  },
+  "Delay_Feedback": {
+    "min": 15,
+    "max": 15,
+    "default": 15,
+    "sysex_offset": 158,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Delay"
+  },
+  "Delay_Level": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 159,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Delay"
+  },
+  "Reverb_Decay": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 160,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "ms",
+    "section": "Reverb"
+  },
+  "Reverb_Mod": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 161,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Reverb"
+  },
+  "Reverb_Level": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 162,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Reverb"
+  },
+  "Reverb_UN1": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 163,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Reverb"
+  },
+  "VoiceMode_Unison": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 164,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "VoiceMode"
+  },
+  "Pan_Spread": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 165,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Pan"
+  },
+  "Glide": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 166,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Glide"
+  },
+  "Voice_Detune": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 167,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Voice"
+  },
+  "Osc_Detune": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 168,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Osc"
+  },
+  "PB_Down": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 169,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "PB"
+  },
+  "PB_Up": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 170,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "PB"
+  },
+  "VelSens_VCA": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 171,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Velocity Sensitivity"
+  },
+  "VelSens_Flt": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 172,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Velocity Sensitivity"
+  },
+  "EnvAssign_Flags": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 173,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "EnvAssign"
+  },
+  "Phase_Reset": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 174,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Phase Reset"
+  }
+}
