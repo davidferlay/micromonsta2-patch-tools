@@ -209,12 +209,30 @@ func runEdit(editFile, replaceList string, catCode byte, params map[string]Param
 	}
 
 	// parse replacement targets
+	tokens := strings.Split(replaceList, ",")
 	targets := parseReplaceList(replaceList, existingNames)
 
+	// warn for unmatched tokens
+	for _, tok := range tokens {
+		t := strings.TrimSpace(tok)
+		matched := false
+		for _, tg := range targets {
+			if tg.name != "" && strings.EqualFold(tg.name, t) { matched = true }
+			if tg.index >= 0 {
+				pos := strconv.Itoa(tg.index + 1)
+				if pos == t { matched = true }
+			}
+		}
+		if !matched {
+			fmt.Printf("Warning: '%s' not found as preset name or position\n", t)
+		}
+	}
+
 	// apply replacements
-	for _, t := range targets {
-		idx := t.index
+	for _, tg := range targets {
+		idx := tg.index
 		if idx < 0 || idx >= n {
+			fmt.Printf("Warning: position %d out of range\n", idx+1)
 			continue
 		}
 		patches, _ := generatePatches(1, catCode, params, allowed, schema)
@@ -229,7 +247,7 @@ func runEdit(editFile, replaceList string, catCode byte, params map[string]Param
 	fmt.Printf("Replaced %d patches in %s\n", len(targets), editFile)
 }
 
-// parseReplaceList now handles names and positions
+// parseReplaceList handles names and positions
 func parseReplaceList(list string, existingNames []string) []replaceTarget {
 	t := []replaceTarget{}
 	tokens := strings.Split(list, ",")
@@ -238,17 +256,24 @@ func parseReplaceList(list string, existingNames []string) []replaceTarget {
 		// try position
 		if num, err := strconv.Atoi(s); err == nil {
 			if num >= 1 && num <= len(existingNames) {
-				t = append(t, replaceTarget{index: num - 1})
+				t = append(t, replaceTarget{index: num - 1, name: ""})
+			} else {
+				fmt.Printf("Warning: position %d out of range\n", num)
 			}
 			continue
 		}
 		// try name (case-insensitive)
 		sLower := strings.ToLower(s)
+		found := false
 		for i, name := range existingNames {
 			if strings.ToLower(name) == sLower {
 				t = append(t, replaceTarget{index: i, name: name})
+				found = true
 				break
 			}
+		}
+		if !found {
+			fmt.Printf("Warning: name '%s' not found among existing presets\n", s)
 		}
 	}
 	return t
