@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"io/fs"
+	"io/ioutil"
 	"log"
 	"math/rand"
 	"os"
@@ -46,6 +47,8 @@ type propSchema struct {
 	Maximum int `json:"maximum"`
 }
 
+const patchSize = 176
+
 // categoryCodes maps category names to SysEx category byte values
 var categoryCodes = map[string]byte{
 	"Bass":       0x00,
@@ -71,11 +74,12 @@ func main() {
 
 	// flags
 	specDir := flag.String("specs", "specs", "Directory containing category JSON spec files")
-	category := flag.String("category", "", "Category of presets to generate (e.g. Lead)")
-	count := flag.Int("count", 1, "Number of presets to generate")
+	category := flag.String("category", "", "Category of presets to generate or replace (e.g. Lead)")
+	count := flag.Int("count", 0, "Number of new presets to generate")
+	editFile := flag.String("edit", "", "Existing SysEx file to edit")
+	replace := flag.String("replace", "", "Comma-separated 1-based positions to replace")
 	flag.Parse()
 
-	// validate category
 	if *category == "" {
 		fmt.Println("Error: --category is required.")
 		printAvailableCategories()
@@ -90,13 +94,7 @@ func main() {
 
 	// load spec JSON
 	jsonPath := fmt.Sprintf("%s/%s.json", *specDir, *category)
-	var raw []byte
-	var err error
-	if *specDir == "specs" {
-		raw, err = fs.ReadFile(specsFS, filepath.ToSlash(jsonPath))
-	} else {
-		raw, err = os.ReadFile(jsonPath)
-	}
+	raw, err := loadSpec(jsonPath, *specDir)
 	if err != nil {
 		log.Fatalf("failed to read spec JSON '%s': %v", jsonPath, err)
 	}
@@ -148,18 +146,80 @@ func main() {
 		allowed[pname] = vals
 	}
 
-	// ensure output root
-	rootDir := "presets"
-	if err := os.MkdirAll(rootDir, 0755); err != nil {
-		log.Fatalf("failed to create presets directory: %v", err)
+	// choose mode
+	if *editFile != "" {
+		runEdit(*editFile, *replace, catCode, params, allowed, schema)
+	} else if *count > 0 {
+		runGenerate(*count, *category, catCode, params, allowed, schema)
+	} else {
+		flag.Usage()
+		os.Exit(1)
 	}
+}
 
-	// generate patches
-	patches := make([][]byte, 0, *count)
-	namesList := make([]string, 0, *count)
+func loadSpec(path, specDir string) ([]byte, error) {
+	if specDir == "specs" {
+		return fs.ReadFile(specsFS, filepath.ToSlash(path))
+	}
+	return os.ReadFile(path)
+}
+
+func runGenerate(count int, category string, catCode byte, params map[string]ParamInfo, allowed map[string][]int, schema *gojsonschema.Schema) {
+	timeStr := strconv.FormatInt(time.Now().Unix(), 10)
+	patches, names := generatePatches(count, catCode, params, allowed, schema)
+
+	if count > 1 {
+		bundleRaw := uniqueName(make(map[string]struct{}))
+		bundleName := strings.Title(strings.ToLower(bundleRaw))
+		subDir := filepath.Join("presets", bundleName)
+		os.MkdirAll(subDir, 0755)
+		combined := fmt.Sprintf("%s_%s_bundle_%s.syx", category, bundleName, timeStr)
+		ioutil.WriteFile(filepath.Join(subDir, combined), concat(patches), 0644)
+		fmt.Printf("Wrote combined %d presets to %s\n", count, filepath.Join(subDir, combined))
+		for i, p := range patches {
+			fname := fmt.Sprintf("%s_%s_%s.syx", category, names[i], timeStr)
+			ioutil.WriteFile(filepath.Join(subDir, fname), p, 0644)
+		}
+		fmt.Printf("Wrote %d individual presets to %s\n", count, subDir)
+	} else {
+		path := filepath.Join("presets", fmt.Sprintf("%s_%s_%s.syx", category, names[0], timeStr))
+		ioutil.WriteFile(path, concat(patches), 0644)
+		fmt.Printf("Wrote 1 preset to %s\n", path)
+	}
+}
+
+func runEdit(editFile, replaceList string, catCode byte, params map[string]ParamInfo, allowed map[string][]int, schema *gojsonschema.Schema) {
+	data, err := os.ReadFile(editFile)
+	if err != nil {
+		log.Fatalf("failed to read sysex file: %v", err)
+	}
+	n := len(data) / patchSize
+	repl := parseReplaceList(replaceList, n)
+	for _, idx := range repl {
+		patches, _ := generatePatches(1, catCode, params, allowed, schema)
+		off := idx * patchSize
+		copy(data[off:off+patchSize], patches[0])
+	}
+	os.WriteFile(editFile, data, 0644)
+	fmt.Printf("Replaced %d patches in %s\n", len(repl), editFile)
+}
+
+func parseReplaceList(list string, total int) []int {
+	r := []int{}
+	for _, token := range strings.Split(list, ",") {
+		t := strings.TrimSpace(token)
+		if num, err := strconv.Atoi(t); err == nil && num >= 1 && num <= total {
+			r = append(r, num-1)
+		}
+	}
+	return r
+}
+
+func generatePatches(count int, catCode byte, params map[string]ParamInfo, allowed map[string][]int, schema *gojsonschema.Schema) ([][]byte, []string) {
+	patches := make([][]byte, 0, count)
+	names := make([]string, 0, count)
 	seen := make(map[string]struct{})
-
-	for len(patches) < *count {
+	for len(patches) < count {
 		cfg := make(map[string]int)
 		for pname, vals := range allowed {
 			cfg[pname] = vals[rand.Intn(len(vals))]
@@ -169,50 +229,15 @@ func main() {
 			continue
 		}
 		key := configKey(cfg)
-		if _, exists := seen[key]; exists {
+		if _, ex := seen[key]; ex {
 			continue
 		}
 		seen[key] = struct{}{}
-
-		rawName := uniqueName(seen)
-		capName := strings.Title(strings.ToLower(rawName))
-		namesList = append(namesList, capName)
-		patches = append(patches, buildPatch(rawName, catCode, params, cfg))
+		raw := uniqueName(seen)
+		names = append(names, strings.Title(strings.ToLower(raw)))
+		patches = append(patches, buildPatch(raw, catCode, params, cfg))
 	}
-
-	// output logic
-	timeStr := strconv.FormatInt(time.Now().Unix(), 10)
-	if *count > 1 {
-		// bundle
-		bundleRaw := uniqueName(seen)
-		bundleName := strings.Title(strings.ToLower(bundleRaw))
-		subDir := filepath.Join(rootDir, bundleName)
-		if err := os.MkdirAll(subDir, 0755); err != nil {
-			log.Fatalf("failed to create bundle subdirectory: %v", err)
-		}
-		combined := fmt.Sprintf("%s_%s_bundle_%s.syx", *category, bundleName, timeStr)
-		if err := os.WriteFile(filepath.Join(subDir, combined), concat(patches), 0644); err != nil {
-			log.Fatalf("failed writing combined: %v", err)
-		}
-		fmt.Printf("Wrote combined %d presets to %s\n", *count, filepath.Join(subDir, combined))
-		// individual
-		for i, p := range patches {
-			fname := fmt.Sprintf("%s_%s_%s.syx", *category, namesList[i], timeStr)
-			if err := os.WriteFile(filepath.Join(subDir, fname), p, 0644); err != nil {
-				log.Fatalf("failed writing %s: %v", fname, err)
-			}
-		}
-		fmt.Printf("Wrote %d individual presets to %s\n", *count, subDir)
-	} else {
-		// single preset
-		name := namesList[0]
-		file := fmt.Sprintf("%s_%s_%s.syx", *category, name, timeStr)
-		path := filepath.Join(rootDir, file)
-		if err := os.WriteFile(path, concat(patches), 0644); err != nil {
-			log.Fatalf("failed writing single: %v", err)
-		}
-		fmt.Printf("Wrote 1 preset to %s\n", path)
-	}
+	return patches, names
 }
 
 func printAvailableCategories() {
@@ -231,7 +256,6 @@ func configKey(cfg map[string]int) string {
 
 func uniqueName(existing map[string]struct{}) string {
 	for {
-		// generate new raw name
 		n := randomdata.Adjective()
 		if len(n) > 8 {
 			n = n[:8]
@@ -245,10 +269,8 @@ func uniqueName(existing map[string]struct{}) string {
 func buildPatch(name string, catCode byte, params map[string]ParamInfo, cfg map[string]int) []byte {
 	patch := make([]byte, len(initPatch))
 	copy(patch, initPatch)
-	// fixed header
 	patch[0], patch[1], patch[2], patch[3], patch[4] = 0xF0, 0x00, 0x21, 0x22, 0x4D
 	patch[5], patch[6], patch[7] = 0x02, 0x03, 0x09
-	// name (lowercase)
 	for i := 0; i < 8; i++ {
 		if i < len(name) {
 			patch[8+i] = name[i]
@@ -256,14 +278,12 @@ func buildPatch(name string, catCode byte, params map[string]ParamInfo, cfg map[
 			patch[8+i] = 0x20
 		}
 	}
-	// category & reserved
-	patch[16], patch[17], patch[18], patch[19] = catCode, 0x00, 0x00, 0x00
-	// params
+	patch[16] = catCode
+	patch[17], patch[18], patch[19] = 0, 0, 0
 	for pname, val := range cfg {
 		o := params[pname].SysexOffset
 		patch[o] = byte(val)
 	}
-	// end
 	patch[len(patch)-1] = 0xF7
 	return patch
 }
