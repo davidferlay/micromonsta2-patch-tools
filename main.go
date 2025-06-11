@@ -78,7 +78,14 @@ func main() {
 	count := flag.Int("count", 0, "Number of new presets to generate")
 	editFile := flag.String("edit", "", "Existing SysEx file to edit")
 	replace := flag.String("replace", "", "Comma-separated preset positions or names to replace")
+	describeFile := flag.String("describe", "", "SysEx file to describe contents")
 	flag.Parse()
+
+	// describe mode
+	if *describeFile != "" {
+		runDescribe(*describeFile)
+		return
+	}
 
 	if *category == "" {
 		fmt.Println("Error: --category is required.")
@@ -154,6 +161,28 @@ func main() {
 	} else {
 		flag.Usage()
 		os.Exit(1)
+	}
+}
+
+func runDescribe(path string) {
+	data, err := ioutil.ReadFile(path)
+	if err != nil { log.Fatalf("failed to read sysex file: %v", err) }
+	n := len(data) / patchSize
+	fmt.Printf("%d patches found in %s:\n", n, path)
+	for i := 0; i < n; i++ {
+		off := i*patchSize
+		// extract name
+		name := strings.TrimRight(string(data[off+8:off+16]), " \x00")
+		// extract category
+		catByte := data[off+16]
+		catName := "Unknown"
+		for k,v := range categoryCodes {
+			if v == catByte {
+				catName = k
+				break
+			}
+		}
+		fmt.Printf("%2d: %s (%s)\n", i+1, name, catName)
 	}
 }
 
