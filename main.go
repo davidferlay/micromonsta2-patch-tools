@@ -77,7 +77,7 @@ func main() {
 	category := flag.String("category", "", "Category of presets to generate or replace (e.g. Lead)")
 	count := flag.Int("count", 0, "Number of new presets to generate")
 	editFile := flag.String("edit", "", "Existing SysEx file to edit")
-	replace := flag.String("replace", "", "Comma-separated 1-based positions to replace")
+	replace := flag.String("replace", "", "Comma-separated preset positions or names to replace")
 	flag.Parse()
 
 	if *category == "" {
@@ -188,31 +188,70 @@ func runGenerate(count int, category string, catCode byte, params map[string]Par
 	}
 }
 
+// runEdit supports index- and name-based replacement
+type replaceTarget struct {
+	index int
+	name  string
+}
+
 func runEdit(editFile, replaceList string, catCode byte, params map[string]ParamInfo, allowed map[string][]int, schema *gojsonschema.Schema) {
 	data, err := os.ReadFile(editFile)
 	if err != nil {
 		log.Fatalf("failed to read sysex file: %v", err)
 	}
 	n := len(data) / patchSize
-	repl := parseReplaceList(replaceList, n)
-	for _, idx := range repl {
+
+	// extract existing names
+	existingNames := make([]string, n)
+	for i := 0; i < n; i++ {
+		off := i*patchSize + 8
+		existingNames[i] = strings.TrimRight(string(data[off:off+8]), " \x00")
+	}
+
+	// parse replacement targets
+	targets := parseReplaceList(replaceList, existingNames)
+
+	// apply replacements
+	for _, t := range targets {
+		idx := t.index
+		if idx < 0 || idx >= n {
+			continue
+		}
 		patches, _ := generatePatches(1, catCode, params, allowed, schema)
 		off := idx * patchSize
 		copy(data[off:off+patchSize], patches[0])
 	}
-	os.WriteFile(editFile, data, 0644)
-	fmt.Printf("Replaced %d patches in %s\n", len(repl), editFile)
+
+	err = os.WriteFile(editFile, data, 0644)
+	if err != nil {
+		log.Fatalf("failed to write sysex file: %v", err)
+	}
+	fmt.Printf("Replaced %d patches in %s\n", len(targets), editFile)
 }
 
-func parseReplaceList(list string, total int) []int {
-	r := []int{}
-	for _, token := range strings.Split(list, ",") {
-		t := strings.TrimSpace(token)
-		if num, err := strconv.Atoi(t); err == nil && num >= 1 && num <= total {
-			r = append(r, num-1)
+// parseReplaceList now handles names and positions
+func parseReplaceList(list string, existingNames []string) []replaceTarget {
+	t := []replaceTarget{}
+	tokens := strings.Split(list, ",")
+	for _, tok := range tokens {
+		s := strings.TrimSpace(tok)
+		// try position
+		if num, err := strconv.Atoi(s); err == nil {
+			if num >= 1 && num <= len(existingNames) {
+				t = append(t, replaceTarget{index: num - 1})
+			}
+			continue
+		}
+		// try name (case-insensitive)
+		sLower := strings.ToLower(s)
+		for i, name := range existingNames {
+			if strings.ToLower(name) == sLower {
+				t = append(t, replaceTarget{index: i, name: name})
+				break
+			}
 		}
 	}
-	return r
+	return t
 }
 
 func generatePatches(count int, catCode byte, params map[string]ParamInfo, allowed map[string][]int, schema *gojsonschema.Schema) ([][]byte, []string) {
