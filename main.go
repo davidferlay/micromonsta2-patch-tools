@@ -239,6 +239,17 @@ type replaceTarget struct {
 	name  string
 }
 
+// extractExistingNames extracts all preset names from sysex data
+func extractExistingNames(data []byte) []string {
+	n := len(data) / patchSize
+	names := make([]string, n)
+	for i := 0; i < n; i++ {
+		off := i*patchSize + 8
+		names[i] = strings.TrimRight(string(data[off:off+8]), " \x00")
+	}
+	return names
+}
+
 // runEdit replaces patches and writes updated descriptor if multiple
 func runEdit(editFile, replaceList string, catCode byte, params map[string]ParamInfo, allowed map[string][]int, schema *gojsonschema.Schema) {
 	data, err := os.ReadFile(editFile)
@@ -248,17 +259,13 @@ func runEdit(editFile, replaceList string, catCode byte, params map[string]Param
 	n := len(data) / patchSize
 
 	// extract existing names
-	existingNames := make([]string, n)
-	for i := 0; i < n; i++ {
-		off := i*patchSize + 8
-		existingNames[i] = strings.TrimRight(string(data[off:off+8]), " \x00")
-	}
+	existingNames := extractExistingNames(data)
 
 	// parse replacement targets
-	tokens := strings.Split(replaceList, ",")
 	targets := parseReplaceList(replaceList, existingNames)
 
 	// warn for unmatched tokens
+	tokens := strings.Split(replaceList, ",")
 	for _, tok := range tokens {
 		t := strings.TrimSpace(tok)
 		matched := false
@@ -278,6 +285,19 @@ func runEdit(editFile, replaceList string, catCode byte, params map[string]Param
 		}
 	}
 
+	// create exclusion set for name generation
+	// include all existing names except those being replaced
+	nameExclusions := make(map[string]struct{})
+	replacedIndices := make(map[int]struct{})
+	for _, tg := range targets {
+		replacedIndices[tg.index] = struct{}{}
+	}
+	for i, name := range existingNames {
+		if _, isReplaced := replacedIndices[i]; !isReplaced {
+			nameExclusions[strings.ToLower(name)] = struct{}{}
+		}
+	}
+
 	// apply replacements
 	for _, tg := range targets {
 		idx := tg.index
@@ -285,9 +305,11 @@ func runEdit(editFile, replaceList string, catCode byte, params map[string]Param
 			fmt.Printf("Warning: position %d out of range\n", idx+1)
 			continue
 		}
-		patches, _ := generatePatches(1, catCode, params, allowed, schema)
+		patches, names := generatePatchesWithExclusions(1, catCode, params, allowed, schema, nameExclusions)
 		off := idx * patchSize
 		copy(data[off:off+patchSize], patches[0])
+		// Add the new name to exclusions to prevent future duplicates in this session
+		nameExclusions[strings.ToLower(names[0])] = struct{}{}
 	}
 
 	err = os.WriteFile(editFile, data, 0644)
@@ -375,10 +397,17 @@ func writeDescriptorFile(sysexPath string, data []byte) error {
 	return nil
 }
 
-func generatePatches(count int, catCode byte, params map[string]ParamInfo, allowed map[string][]int, schema *gojsonschema.Schema) ([][]byte, []string) {
+// generatePatchesWithExclusions generates patches avoiding excluded names
+func generatePatchesWithExclusions(count int, catCode byte, params map[string]ParamInfo, allowed map[string][]int, schema *gojsonschema.Schema, nameExclusions map[string]struct{}) ([][]byte, []string) {
 	patches := make([][]byte, 0, count)
 	names := make([]string, 0, count)
 	seen := make(map[string]struct{})
+
+	// Copy nameExclusions to seen to avoid collisions
+	for name := range nameExclusions {
+		seen[name] = struct{}{}
+	}
+
 	for len(patches) < count {
 		cfg := make(map[string]int)
 		for pname, vals := range allowed {
@@ -393,11 +422,18 @@ func generatePatches(count int, catCode byte, params map[string]ParamInfo, allow
 			continue
 		}
 		seen[key] = struct{}{}
-		raw := uniqueName(seen)
+		raw := uniqueNameWithExclusions(seen)
 		names = append(names, raw)
 		patches = append(patches, buildPatch(raw, catCode, params, cfg))
+		// Add the new name to seen to prevent duplicates within this generation
+		seen[strings.ToLower(raw)] = struct{}{}
 	}
 	return patches, names
+}
+
+// generatePatches now uses the new exclusion-aware function with empty exclusions
+func generatePatches(count int, catCode byte, params map[string]ParamInfo, allowed map[string][]int, schema *gojsonschema.Schema) ([][]byte, []string) {
+	return generatePatchesWithExclusions(count, catCode, params, allowed, schema, make(map[string]struct{}))
 }
 
 func printAvailableCategories() {
@@ -422,6 +458,22 @@ func uniqueName(existing map[string]struct{}) string {
 		}
 		if _, ok := existing[n]; !ok {
 			return n
+		}
+	}
+}
+
+// uniqueNameWithExclusions generates unique names avoiding exclusions
+func uniqueNameWithExclusions(existing map[string]struct{}) string {
+	for {
+		n := randomdata.Adjective()
+		if len(n) > 8 {
+			n = n[:8]
+		}
+		// Check both exact name and lowercase version for case-insensitive collision detection
+		if _, ok := existing[n]; !ok {
+			if _, ok := existing[strings.ToLower(n)]; !ok {
+				return n
+			}
 		}
 	}
 }
