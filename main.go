@@ -80,11 +80,18 @@ func main() {
 	editFile := flag.String("edit", "", "Existing SysEx file to edit")
 	replace := flag.String("replace", "", "Comma-separated preset positions or names to replace")
 	describeFile := flag.String("describe", "", "SysEx file to describe contents")
+	splitFile := flag.String("split", "", "SysEx file to split into individual preset files")
 	flag.Parse()
 
 	// describe mode
 	if *describeFile != "" {
 		runDescribe(*describeFile)
+		return
+	}
+
+	// split mode
+	if *splitFile != "" {
+		runSplit(*splitFile)
 		return
 	}
 
@@ -165,6 +172,63 @@ func main() {
 	}
 }
 
+func runSplit(path string) {
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Fatalf("failed to read sysex file: %v", err)
+	}
+
+	n := len(data) / patchSize
+	if n <= 1 {
+		fmt.Printf("File %s contains only %d preset(s), nothing to split.\n", path, n)
+		return
+	}
+
+	fmt.Printf("Splitting %d presets from %s into individual files:\n", n, path)
+
+	// Create output directory based on input filename
+	baseName := strings.TrimSuffix(filepath.Base(path), ".syx")
+	outputDir := filepath.Join("presets", baseName+"_split")
+	err = os.MkdirAll(outputDir, 0755)
+	if err != nil {
+		log.Fatalf("failed to create output directory: %v", err)
+	}
+
+	timeStr := strconv.FormatInt(time.Now().Unix(), 10)
+
+	for i := 0; i < n; i++ {
+		// Extract preset data
+		off := i * patchSize
+		presetData := data[off : off+patchSize]
+
+		// Extract name and category
+		name := strings.TrimRight(string(presetData[8:16]), " \x00")
+		catByte := presetData[16]
+		catName := "Unknown"
+		for k, v := range categoryCodes {
+			if v == catByte {
+				catName = k
+				break
+			}
+		}
+
+		// Create filename: Category_PresetName_timestamp.syx
+		filename := fmt.Sprintf("%s_%s_%s.syx", catName, name, timeStr)
+		filepath := filepath.Join(outputDir, filename)
+
+		// Write individual preset file
+		err = ioutil.WriteFile(filepath, presetData, 0644)
+		if err != nil {
+			log.Printf("Warning: failed to write %s: %v", filepath, err)
+			continue
+		}
+
+		fmt.Printf("  %2d: %s (%s) -> %s\n", i+1, name, catName, filename)
+	}
+
+	fmt.Printf("Split complete. %d individual preset files written to %s\n", n, outputDir)
+}
+
 func runDescribe(path string) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -207,8 +271,8 @@ func runGenerate(count int, category string, catCode byte, params map[string]Par
 		bundleName := strings.Title(strings.ToLower(bundleRaw))
 		subDir := filepath.Join("presets", bundleName)
 		os.MkdirAll(subDir, 0755)
-		// combined file
-		combined := fmt.Sprintf("%s_%s_bundle_%s.syx", category, bundleName, timeStr)
+		// combined file (no category prefix for bundles)
+		combined := fmt.Sprintf("%s_bundle_%s.syx", bundleName, timeStr)
 		combinedPath := filepath.Join(subDir, combined)
 		combinedData := concat(patches)
 		ioutil.WriteFile(combinedPath, combinedData, 0644)
