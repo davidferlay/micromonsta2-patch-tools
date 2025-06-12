@@ -119,6 +119,33 @@ func getCategoryOrder(category string) int {
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
+	// Custom flag parsing to handle missing arguments better
+	args := os.Args[1:]
+
+	// Check for --change-category without value before flag parsing
+	for i, arg := range args {
+		if arg == "--change-category" || arg == "-change-category" {
+			// Check if next argument exists and is not another flag
+			if i+1 >= len(args) || strings.HasPrefix(args[i+1], "-") {
+				// Find the --edit file to provide context
+				editFile := ""
+				for j := 0; j < len(args)-1; j++ {
+					if (args[j] == "--edit" || args[j] == "-edit") && j+1 < len(args) {
+						editFile = args[j+1]
+						break
+					}
+				}
+				if editFile != "" {
+					suggestCategoryFromFile(editFile)
+				} else {
+					fmt.Println("Error: --change-category requires a category value")
+					printAvailableCategories()
+				}
+				os.Exit(1)
+			}
+		}
+	}
+
 	// flags
 	specDir := flag.String("specs", "specs", "Directory containing category JSON spec files")
 	category := flag.String("category", "", "Category of presets to generate or replace (e.g. Lead)")
@@ -131,6 +158,7 @@ func main() {
 	groupFiles := flag.String("group", "", "Comma-separated list of SysEx files to group into a single bundle")
 	sortFile := flag.String("sort", "", "SysEx file to sort presets by category then alphabetically")
 	renameTo := flag.String("rename", "", "New name for the preset when editing single preset files (max 8 characters)")
+	changeCategoryTo := flag.String("change-category", "", "New category for the preset when editing single preset files (e.g. Lead, Bass, Pad)")
 	flag.Parse()
 
 	// describe mode
@@ -157,8 +185,8 @@ func main() {
 		return
 	}
 
-	if *category == "" && *editFile != "" && *replaceWith == "" && *renameTo == "" {
-		fmt.Println("Error: --category is required for generate/edit operations (unless using --replace-with or --rename).")
+	if *category == "" && *editFile != "" && *replaceWith == "" && *renameTo == "" && *changeCategoryTo == "" {
+		fmt.Println("Error: --category is required for generate/edit operations (unless using --replace-with, --rename, or --change-category).")
 		printAvailableCategories()
 		os.Exit(1)
 	}
@@ -169,6 +197,18 @@ func main() {
 		catCode, ok = categoryCodes[*category]
 		if !ok {
 			fmt.Printf("Error: unknown category '%s'.\n", *category)
+			printAvailableCategories()
+			os.Exit(1)
+		}
+	}
+
+	// Validate change-category parameter if provided
+	var changeCatCode byte
+	if *changeCategoryTo != "" {
+		var ok bool
+		changeCatCode, ok = categoryCodes[*changeCategoryTo]
+		if !ok {
+			fmt.Printf("Error: unknown category '%s' for --change-category.\n", *changeCategoryTo)
 			printAvailableCategories()
 			os.Exit(1)
 		}
@@ -236,9 +276,15 @@ func main() {
 
 	// choose mode
 	if *editFile != "" {
-		if *renameTo != "" {
+		if *renameTo != "" && *changeCategoryTo != "" {
+			// Combined rename and category change mode
+			runRenameAndChangeCategory(*editFile, *renameTo, changeCatCode)
+		} else if *renameTo != "" {
 			// Rename mode for single preset files
 			runRename(*editFile, *renameTo)
+		} else if *changeCategoryTo != "" {
+			// Category change mode for single preset files
+			runChangeCategory(*editFile, changeCatCode)
 		} else if *category != "" {
 			// Random generation replacement mode
 			runEdit(*editFile, *replace, catCode, params, allowed, schema)
@@ -246,7 +292,7 @@ func main() {
 			// File-based replacement mode
 			runEditWithFiles(*editFile, *replace, *replaceWith)
 		} else {
-			fmt.Println("Error: --edit requires one of: --rename (for renaming), --category (for random generation), or --replace-with (for file replacement)")
+			fmt.Println("Error: --edit requires one of: --rename (for renaming), --change-category (for category change), --category (for random generation), or --replace-with (for file replacement)")
 			os.Exit(1)
 		}
 	} else if *count > 0 {
@@ -426,6 +472,151 @@ func runRename(filePath, newName string) {
 	fmt.Printf("Successfully renamed preset:\n")
 	fmt.Printf("  Old: %s -> '%s' (%s)\n", filepath.Base(filePath), currentName, category)
 	fmt.Printf("  New: %s -> '%s' (%s)\n", filepath.Base(newFilePath), newName, category)
+}
+
+func runChangeCategory(filePath string, newCatCode byte) {
+	// Check if file exists
+	if _, err := os.Stat(filePath); err != nil {
+		log.Fatalf("failed to access file '%s': %v", filePath, err)
+	}
+
+	// Read the file
+	data, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		log.Fatalf("failed to read sysex file: %v", err)
+	}
+
+	// Check if it's a single preset
+	if len(data) != patchSize {
+		log.Fatalf("file '%s' is not a single preset file (size: %d bytes, expected: %d)", filePath, len(data), patchSize)
+	}
+
+	// Extract current preset info
+	currentName := strings.TrimRight(string(data[8:16]), " \x00")
+	currentCatByte := data[16]
+	currentCategory := getCategoryName(currentCatByte)
+	newCategory := getCategoryName(newCatCode)
+
+	fmt.Printf("Changing category of preset '%s' from %s to %s\n", currentName, currentCategory, newCategory)
+
+	// Update the category in the sysex data
+	data[16] = newCatCode
+
+	// Generate new filename
+	timeStr := strconv.FormatInt(time.Now().Unix(), 10)
+	dir := filepath.Dir(filePath)
+	newFileName := fmt.Sprintf("%s_%s_%s.syx", newCategory, currentName, timeStr)
+	newFilePath := filepath.Join(dir, newFileName)
+
+	// Write the updated preset to the new file
+	err = ioutil.WriteFile(newFilePath, data, 0644)
+	if err != nil {
+		log.Fatalf("failed to write updated preset: %v", err)
+	}
+
+	// Remove the original file
+	err = os.Remove(filePath)
+	if err != nil {
+		log.Printf("Warning: failed to remove original file '%s': %v", filePath, err)
+	}
+
+	fmt.Printf("Successfully changed category:\n")
+	fmt.Printf("  Old: %s -> '%s' (%s)\n", filepath.Base(filePath), currentName, currentCategory)
+	fmt.Printf("  New: %s -> '%s' (%s)\n", filepath.Base(newFilePath), currentName, newCategory)
+}
+
+func runRenameAndChangeCategory(filePath, newName string, newCatCode byte) {
+	// Validate new name length
+	if len(newName) > 8 {
+		fmt.Printf("Warning: new name '%s' is longer than 8 characters, truncating to '%s'\n", newName, newName[:8])
+		newName = newName[:8]
+	}
+
+	// Check if file exists
+	if _, err := os.Stat(filePath); err != nil {
+		log.Fatalf("failed to access file '%s': %v", filePath, err)
+	}
+
+	// Read the file
+	data, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		log.Fatalf("failed to read sysex file: %v", err)
+	}
+
+	// Check if it's a single preset
+	if len(data) != patchSize {
+		log.Fatalf("file '%s' is not a single preset file (size: %d bytes, expected: %d)", filePath, len(data), patchSize)
+	}
+
+	// Extract current preset info
+	currentName := strings.TrimRight(string(data[8:16]), " \x00")
+	currentCatByte := data[16]
+	currentCategory := getCategoryName(currentCatByte)
+	newCategory := getCategoryName(newCatCode)
+
+	fmt.Printf("Renaming preset '%s' (%s) to '%s' (%s)\n", currentName, currentCategory, newName, newCategory)
+
+	// Update the preset name in the sysex data
+	for i := 0; i < 8; i++ {
+		if i < len(newName) {
+			data[8+i] = newName[i]
+		} else {
+			data[8+i] = 0x20 // space padding
+		}
+	}
+
+	// Update the category in the sysex data
+	data[16] = newCatCode
+
+	// Generate new filename
+	timeStr := strconv.FormatInt(time.Now().Unix(), 10)
+	dir := filepath.Dir(filePath)
+	newFileName := fmt.Sprintf("%s_%s_%s.syx", newCategory, newName, timeStr)
+	newFilePath := filepath.Join(dir, newFileName)
+
+	// Write the updated preset to the new file
+	err = ioutil.WriteFile(newFilePath, data, 0644)
+	if err != nil {
+		log.Fatalf("failed to write updated preset: %v", err)
+	}
+
+	// Remove the original file
+	err = os.Remove(filePath)
+	if err != nil {
+		log.Printf("Warning: failed to remove original file '%s': %v", filePath, err)
+	}
+
+	fmt.Printf("Successfully renamed and changed category:\n")
+	fmt.Printf("  Old: %s -> '%s' (%s)\n", filepath.Base(filePath), currentName, currentCategory)
+	fmt.Printf("  New: %s -> '%s' (%s)\n", filepath.Base(newFilePath), newName, newCategory)
+}
+
+// suggestCategoryFromFile reads a preset file and suggests the current category
+func suggestCategoryFromFile(filePath string) {
+	// Check if file exists and is readable
+	if _, err := os.Stat(filePath); err != nil {
+		return // Can't help if file doesn't exist
+	}
+
+	// Try to read the file
+	data, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return // Can't help if can't read file
+	}
+
+	// Check if it's a single preset
+	if len(data) != patchSize {
+		return // Can't help if not a valid preset
+	}
+
+	// Extract current preset info
+	currentName := strings.TrimRight(string(data[8:16]), " \x00")
+	catByte := data[16]
+	currentCategory := getCategoryName(catByte)
+
+	fmt.Printf("Current preset: '%s' (%s)\n", currentName, currentCategory)
+	fmt.Printf("Hint: use --change-category \"NewCategory\" to change from %s to another category.\n", currentCategory)
+	printAvailableCategories()
 }
 
 func runGroup(fileList string) {

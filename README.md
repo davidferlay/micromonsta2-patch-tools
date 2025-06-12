@@ -13,6 +13,7 @@ A comprehensive CLI tool for managing **Micromonsta 2** hardware synthesizer pat
 - 🔗 **Group** multiple `.syx` files (single presets or bundles) into one bundle
 - 🔄 **Sort** presets in bundles by category then alphabetically
 - 🏷️ **Rename** individual presets (updates both SysEx data and filename)
+- 📂 **Change category** of individual presets (updates category in SysEx data and filename)
 - 📁 **Bundle management** with automatic descriptor files for multi-preset collections
 - 🛡️ **Name collision prevention** when editing existing bundles
 - ⚙️ **Schema validation** against comprehensive JSON parameter constraints
@@ -80,6 +81,29 @@ The rename feature will:
 - Remove the original file (clean replacement)
 - Automatically truncate names longer than 8 characters (hardware limitation)
 - Maintain the original category
+
+### Change Category of Individual Presets
+
+```bash
+# Change a preset's category
+micromonsta2-patch-tools --edit Bass_wobble_1720000000.syx --change-category "Lead"
+
+# The tool will update the category in SysEx data and create a new file
+# Old: Bass_wobble_1720000000.syx -> 'wobble' (Bass)
+# New: Lead_wobble_1720000001.syx -> 'wobble' (Lead)
+
+# You can also rename and change category at the same time
+micromonsta2-patch-tools --edit Bass_wobble_1720000000.syx --rename "awesome" --change-category "Lead"
+# Old: Bass_wobble_1720000000.syx -> 'wobble' (Bass)
+# New: Lead_awesome_1720000001.syx -> 'awesome' (Lead)
+```
+
+The category change feature will:
+- Update the category byte inside the SysEx data
+- Create a new file with the updated category in the filename
+- Remove the original file (clean replacement)
+- Maintain the original preset name (unless also using --rename)
+- Support all available categories: Bass, Lead, Pad, Keys, Organ, String, Brass, Percussion, Drone, Noise, SFX, Arp, Misc, User1, User2, User3
 
 ### Sort Presets in Bundles
 
@@ -225,16 +249,22 @@ micromonsta2-patch-tools --edit my_bundle.syx --replace "1,2,3,4" --replace-with
 # Rename a preset for better organization
 micromonsta2-patch-tools --edit Bass_adjective_1720000000.syx --rename "wobble"
 
+# Change a preset's category
+micromonsta2-patch-tools --edit Bass_wobble_1720000001.syx --change-category "Lead"
+
+# Do both at once
+micromonsta2-patch-tools --edit Lead_wobble_1720000002.syx --rename "awesome" --change-category "Pad"
+
 # Generate some presets
 micromonsta2-patch-tools --category Lead --count 3
 
-# Rename them to something meaningful
-micromonsta2-patch-tools --edit Lead_random1_*.syx --rename "arp1"
-micromonsta2-patch-tools --edit Lead_random2_*.syx --rename "arp2"
-micromonsta2-patch-tools --edit Lead_random3_*.syx --rename "arp3"
+# Organize them by renaming and categorizing
+micromonsta2-patch-tools --edit Lead_random1_*.syx --rename "arp1" --change-category "Arp"
+micromonsta2-patch-tools --edit Lead_random2_*.syx --rename "arp2" --change-category "Arp"
+micromonsta2-patch-tools --edit Lead_random3_*.syx --rename "arp3" --change-category "Arp"
 
 # Group them into a bundle
-micromonsta2-patch-tools --group "Lead_arp1_*.syx,Lead_arp2_*.syx,Lead_arp3_*.syx"
+micromonsta2-patch-tools --group "Arp_arp1_*.syx,Arp_arp2_*.syx,Arp_arp3_*.syx"
 ```
 
 ### Organize Existing Bundles
@@ -278,6 +308,14 @@ micromonsta2-patch-tools --edit my_bundle.syx --replace "1,warm" --replace-with 
 # Rename a single preset
 micromonsta2-patch-tools --edit Lead_bright_1720000000.syx --rename "killer"
 # This renames the preset internally and creates a new file
+
+# Change category of a single preset
+micromonsta2-patch-tools --edit Bass_wobble_1720000000.syx --change-category "Lead"
+# This changes the category and creates a new file
+
+# Rename and change category at the same time
+micromonsta2-patch-tools --edit Bass_old_1720000000.syx --rename "new" --change-category "Pad"
+# This does both operations and creates a new file
 ```
 
 ---
