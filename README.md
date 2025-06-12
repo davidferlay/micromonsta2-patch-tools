@@ -10,6 +10,7 @@ A comprehensive CLI tool for managing **Micromonsta 2** hardware synthesizer pat
 - ✏️ **Edit** existing bundles by replacing specific presets by position or name (with random generation or specific preset files)
 - 🔍 **Describe** patch contents to see what's inside any `.syx` file
 - ✂️ **Split** multi-preset bundles into individual preset files
+- 🎯 **Extract** specific presets from bundles by position or name
 - 🔗 **Group** multiple `.syx` files (single presets or bundles) into one bundle
 - 🔄 **Sort** presets in bundles by category then alphabetically
 - 🏷️ **Rename** individual presets (updates both SysEx data and filename)
@@ -130,9 +131,29 @@ micromonsta2-patch-tools --describe bundle.syx
 ### Split Bundles
 
 ```bash
-# Split a multi-preset bundle into individual files
+# Split a multi-preset bundle into individual files (all presets)
 micromonsta2-patch-tools --split bundle.syx
+
+# Extract specific presets by position
+micromonsta2-patch-tools --split bundle.syx --extract "1,3,5"
+
+# Extract specific presets by name (case-insensitive)
+micromonsta2-patch-tools --split bundle.syx --extract "warm,bright,deep"
+
+# Mix positions and names
+micromonsta2-patch-tools --split bundle.syx --extract "1,warm,5,bright"
 ```
+
+**Split vs Extract:**
+- `--split` alone: Extracts ALL presets from the bundle
+- `--split` with `--extract`: Extracts only the specified presets
+
+The extract feature will:
+- Only work with bundle files (2+ presets)
+- Create individual preset files for selected presets only
+- Support both position numbers (1-based) and preset names (case-insensitive)
+- Create an output directory named `OriginalName_extracted`
+- Warn about invalid positions or names that can't be found
 
 ### Group Files Together
 
@@ -153,6 +174,7 @@ micromonsta2-patch-tools --group "preset1.syx,preset2.syx,bundle.syx"
 | `--replace-with` | Comma-separated list of single preset `.syx` files to use as replacements |
 | `--describe`   | Path to `.syx` file to describe contents                        |
 | `--split`      | Path to `.syx` file to split into individual preset files       |
+| `--extract`    | Comma-separated list of preset positions (1-based) or names to extract from bundle |
 | `--group`      | Comma-separated list of `.syx` files to group into a bundle     |
 | `--sort`       | Path to `.syx` file to sort presets by category then alphabetically |
 
@@ -183,6 +205,14 @@ presets/
 └── OriginalBundle_split/
     ├── Lead_bright_1720000000.syx
     ├── Bass_deep_1720000000.syx
+    └── Pad_warm_1720000000.syx
+```
+
+### Extract Output
+```
+presets/
+└── OriginalBundle_extracted/
+    ├── Lead_bright_1720000000.syx           # Only extracted presets
     └── Pad_warm_1720000000.syx
 ```
 

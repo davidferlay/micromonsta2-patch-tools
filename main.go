@@ -155,6 +155,7 @@ func main() {
 	replaceWith := flag.String("replace-with", "", "Comma-separated list of single preset .syx files to use as replacements")
 	describeFile := flag.String("describe", "", "SysEx file to describe contents")
 	splitFile := flag.String("split", "", "SysEx file to split into individual preset files")
+	extractFrom := flag.String("extract", "", "Comma-separated list of preset positions (1-based) or names to extract from bundle")
 	groupFiles := flag.String("group", "", "Comma-separated list of SysEx files to group into a single bundle")
 	sortFile := flag.String("sort", "", "SysEx file to sort presets by category then alphabetically")
 	renameTo := flag.String("rename", "", "New name for the preset when editing single preset files (max 8 characters)")
@@ -169,7 +170,13 @@ func main() {
 
 	// split mode
 	if *splitFile != "" {
-		runSplit(*splitFile)
+		if *extractFrom != "" {
+			// Extract specific presets from bundle
+			runExtract(*splitFile, *extractFrom)
+		} else {
+			// Split all presets from bundle
+			runSplit(*splitFile)
+		}
 		return
 	}
 
@@ -803,6 +810,86 @@ func runSplit(path string) {
 	}
 
 	fmt.Printf("Split complete. %d individual preset files written to %s\n", n, outputDir)
+}
+
+func runExtract(path, extractList string) {
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Fatalf("failed to read sysex file: %v", err)
+	}
+
+	n := len(data) / patchSize
+	if n <= 1 {
+		fmt.Printf("File %s contains only %d preset(s), use single preset editing instead.\n", path, n)
+		return
+	}
+
+	fmt.Printf("Extracting specific presets from %s (%d total presets):\n", path, n)
+
+	// Extract existing names for position/name lookup
+	existingNames := extractExistingNames(data)
+
+	// Parse extraction targets
+	targets := parseReplaceList(extractList, existingNames)
+
+	if len(targets) == 0 {
+		fmt.Println("Error: no valid extraction targets specified")
+		return
+	}
+
+	// Warn for unmatched tokens
+	warnUnmatchedTokens(extractList, targets)
+
+	// Create output directory based on input filename
+	baseName := strings.TrimSuffix(filepath.Base(path), ".syx")
+	outputDir := filepath.Join("presets", baseName+"_extracted")
+	err = os.MkdirAll(outputDir, 0755)
+	if err != nil {
+		log.Fatalf("failed to create output directory: %v", err)
+	}
+
+	timeStr := strconv.FormatInt(time.Now().Unix(), 10)
+	extractedCount := 0
+
+	// Extract each target preset
+	for _, target := range targets {
+		idx := target.index
+		if idx < 0 || idx >= n {
+			fmt.Printf("Warning: position %d out of range, skipping\n", idx+1)
+			continue
+		}
+
+		// Extract preset data
+		off := idx * patchSize
+		presetData := data[off : off+patchSize]
+
+		// Extract name and category
+		name := strings.TrimRight(string(presetData[8:16]), " \x00")
+		catByte := presetData[16]
+		catName := getCategoryName(catByte)
+
+		// Create filename: Category_PresetName_timestamp.syx
+		filename := fmt.Sprintf("%s_%s_%s.syx", catName, name, timeStr)
+		filePath := filepath.Join(outputDir, filename)
+
+		// Write individual preset file
+		err = ioutil.WriteFile(filePath, presetData, 0644)
+		if err != nil {
+			log.Printf("Warning: failed to write %s: %v", filePath, err)
+			continue
+		}
+
+		fmt.Printf("  Extracted %2d: %s (%s) -> %s\n", idx+1, name, catName, filename)
+		extractedCount++
+	}
+
+	if extractedCount > 0 {
+		fmt.Printf("Extraction complete. %d preset files written to %s\n", extractedCount, outputDir)
+	} else {
+		fmt.Println("No presets were extracted.")
+		// Remove empty directory
+		os.Remove(outputDir)
+	}
 }
 
 func runDescribe(path string) {
