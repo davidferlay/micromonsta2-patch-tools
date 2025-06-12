@@ -125,6 +125,7 @@ func main() {
 	count := flag.Int("count", 0, "Number of new presets to generate")
 	editFile := flag.String("edit", "", "Existing SysEx file to edit")
 	replace := flag.String("replace", "", "Comma-separated preset positions or names to replace")
+	replaceWith := flag.String("replace-with", "", "Comma-separated list of single preset .syx files to use as replacements")
 	describeFile := flag.String("describe", "", "SysEx file to describe contents")
 	splitFile := flag.String("split", "", "SysEx file to split into individual preset files")
 	groupFiles := flag.String("group", "", "Comma-separated list of SysEx files to group into a single bundle")
@@ -155,76 +156,98 @@ func main() {
 		return
 	}
 
-	if *category == "" {
-		fmt.Println("Error: --category is required for generate/edit operations.")
-		printAvailableCategories()
-		os.Exit(1)
-	}
-	catCode, ok := categoryCodes[*category]
-	if !ok {
-		fmt.Printf("Error: unknown category '%s'.\n", *category)
+	if *category == "" && *editFile != "" && *replaceWith == "" {
+		fmt.Println("Error: --category is required for generate/edit operations (unless using --replace-with).")
 		printAvailableCategories()
 		os.Exit(1)
 	}
 
-	// load spec JSON
-	jsonPath := fmt.Sprintf("%s/%s.json", *specDir, *category)
-	raw, err := loadSpec(jsonPath, *specDir)
-	if err != nil {
-		log.Fatalf("failed to read spec JSON '%s': %v", jsonPath, err)
+	var catCode byte
+	if *category != "" {
+		var ok bool
+		catCode, ok = categoryCodes[*category]
+		if !ok {
+			fmt.Printf("Error: unknown category '%s'.\n", *category)
+			printAvailableCategories()
+			os.Exit(1)
+		}
 	}
+
 	var params map[string]ParamInfo
-	if err := json.Unmarshal(raw, &params); err != nil {
-		log.Fatalf("failed to parse spec JSON: %v", err)
-	}
+	var allowed map[string][]int
+	var schema *gojsonschema.Schema
 
-	// compile JSON schema
-	schemaLoader := gojsonschema.NewBytesLoader(schemaData)
-	schema, err := gojsonschema.NewSchema(schemaLoader)
-	if err != nil {
-		log.Fatalf("failed to compile JSON schema: %v", err)
-	}
-	var schemaStruct struct {
-		Properties map[string]propSchema `json:"properties"`
-	}
-	if err := json.Unmarshal(schemaData, &schemaStruct); err != nil {
-		log.Fatalf("failed to parse JSON schema: %v", err)
-	}
-	schemaProps := schemaStruct.Properties
+	// Only load specs and schema if we need them (for random generation)
+	if *category != "" {
+		// load spec JSON
+		jsonPath := fmt.Sprintf("%s/%s.json", *specDir, *category)
+		raw, err := loadSpec(jsonPath, *specDir)
+		if err != nil {
+			log.Fatalf("failed to read spec JSON '%s': %v", jsonPath, err)
+		}
+		if err := json.Unmarshal(raw, &params); err != nil {
+			log.Fatalf("failed to parse spec JSON: %v", err)
+		}
 
-	// validate spec fields
-	for name := range params {
-		if _, exists := schemaProps[name]; !exists {
-			log.Fatalf("spec JSON contains unknown parameter '%s' not in schema", name)
+		// compile JSON schema
+		schemaLoader := gojsonschema.NewBytesLoader(schemaData)
+		schema, err = gojsonschema.NewSchema(schemaLoader)
+		if err != nil {
+			log.Fatalf("failed to compile JSON schema: %v", err)
 		}
-	}
+		var schemaStruct struct {
+			Properties map[string]propSchema `json:"properties"`
+		}
+		if err := json.Unmarshal(schemaData, &schemaStruct); err != nil {
+			log.Fatalf("failed to parse JSON schema: %v", err)
+		}
+		schemaProps := schemaStruct.Properties
 
-	// build allowed ranges
-	allowed := make(map[string][]int, len(params))
-	for pname, info := range params {
-		minVal, maxVal := info.Min, info.Max
-		sch := schemaProps[pname]
-		if sch.Minimum > minVal {
-			minVal = sch.Minimum
+		// validate spec fields
+		for name := range params {
+			if _, exists := schemaProps[name]; !exists {
+				log.Fatalf("spec JSON contains unknown parameter '%s' not in schema", name)
+			}
 		}
-		if sch.Maximum < maxVal {
-			maxVal = sch.Maximum
+
+		// build allowed ranges
+		allowed = make(map[string][]int, len(params))
+		for pname, info := range params {
+			minVal, maxVal := info.Min, info.Max
+			sch := schemaProps[pname]
+			if sch.Minimum > minVal {
+				minVal = sch.Minimum
+			}
+			if sch.Maximum < maxVal {
+				maxVal = sch.Maximum
+			}
+			if maxVal < minVal {
+				maxVal = minVal
+			}
+			rng := maxVal - minVal + 1
+			vals := make([]int, rng)
+			for i := 0; i < rng; i++ {
+				vals[i] = minVal + i
+			}
+			allowed[pname] = vals
 		}
-		if maxVal < minVal {
-			maxVal = minVal
-		}
-		rng := maxVal - minVal + 1
-		vals := make([]int, rng)
-		for i := 0; i < rng; i++ {
-			vals[i] = minVal + i
-		}
-		allowed[pname] = vals
 	}
 
 	// choose mode
 	if *editFile != "" {
-		runEdit(*editFile, *replace, catCode, params, allowed, schema)
+		if *category != "" {
+			runEdit(*editFile, *replace, catCode, params, allowed, schema)
+		} else if *replaceWith != "" {
+			runEditWithFiles(*editFile, *replace, *replaceWith)
+		} else {
+			fmt.Println("Error: --edit requires either --category (for random generation) or --replace-with (for file replacement)")
+			os.Exit(1)
+		}
 	} else if *count > 0 {
+		if *category == "" {
+			fmt.Println("Error: --count requires --category")
+			os.Exit(1)
+		}
 		runGenerate(*count, *category, catCode, params, allowed, schema)
 	} else {
 		flag.Usage()
@@ -602,8 +625,120 @@ func extractExistingNames(data []byte) []string {
 	return names
 }
 
-// runEdit replaces patches and writes updated descriptor if multiple
+// PresetReplacement holds information about a preset replacement operation
+type PresetReplacement struct {
+	Data     []byte
+	Name     string
+	Category string
+}
+
+// runEditWithFiles replaces specific presets with preset files
+func runEditWithFiles(editFile, replaceList, replaceWithFiles string) {
+	// Load and validate replacement files
+	replacements, err := loadReplacementFiles(replaceWithFiles)
+	if err != nil {
+		log.Fatalf("failed to load replacement files: %v", err)
+	}
+
+	if len(replacements) == 0 {
+		fmt.Println("Error: no valid single preset files found for replacement")
+		return
+	}
+
+	// Show loaded replacements
+	for i, replacement := range replacements {
+		fmt.Printf("Loaded replacement preset %d: %s (%s)\n", i+1, replacement.Name, replacement.Category)
+	}
+
+	// Create preset generator function that cycles through loaded files
+	generateReplacements := func(count int, nameExclusions map[string]struct{}) ([]PresetReplacement, error) {
+		result := make([]PresetReplacement, count)
+		for i := 0; i < count; i++ {
+			replacementIndex := i % len(replacements)
+			result[i] = replacements[replacementIndex]
+		}
+		return result, nil
+	}
+
+	// Use common edit logic
+	runEditCommon(editFile, replaceList, generateReplacements)
+}
+
+// runEdit replaces patches with randomly generated ones
 func runEdit(editFile, replaceList string, catCode byte, params map[string]ParamInfo, allowed map[string][]int, schema *gojsonschema.Schema) {
+	// Create preset generator function for random generation
+	generateReplacements := func(count int, nameExclusions map[string]struct{}) ([]PresetReplacement, error) {
+		patches, names := generatePatchesWithExclusions(count, catCode, params, allowed, schema, nameExclusions)
+
+		result := make([]PresetReplacement, count)
+		for i := 0; i < count; i++ {
+			categoryName := getCategoryName(catCode)
+			result[i] = PresetReplacement{
+				Data:     patches[i],
+				Name:     names[i],
+				Category: categoryName,
+			}
+		}
+		return result, nil
+	}
+
+	// Use common edit logic
+	runEditCommon(editFile, replaceList, generateReplacements)
+}
+
+// loadReplacementFiles loads and validates single preset files
+func loadReplacementFiles(replaceWithFiles string) ([]PresetReplacement, error) {
+	replaceFiles := strings.Split(replaceWithFiles, ",")
+	var replacements []PresetReplacement
+
+	for _, filePath := range replaceFiles {
+		filePath = strings.TrimSpace(filePath)
+		if filePath == "" {
+			continue
+		}
+
+		// Check if file exists
+		if _, err := os.Stat(filePath); err != nil {
+			fmt.Printf("Warning: skipping '%s' - %v\n", filePath, err)
+			continue
+		}
+
+		// Read file
+		fileData, err := ioutil.ReadFile(filePath)
+		if err != nil {
+			fmt.Printf("Warning: failed to read '%s': %v\n", filePath, err)
+			continue
+		}
+
+		// Check if it's a single preset
+		if len(fileData) != patchSize {
+			fmt.Printf("Warning: skipping '%s' - not a single preset file (size: %d bytes, expected: %d)\n",
+				filePath, len(fileData), patchSize)
+			continue
+		}
+
+		// Extract preset info
+		name := strings.TrimRight(string(fileData[8:16]), " \x00")
+		catByte := fileData[16]
+		category := getCategoryName(catByte)
+
+		replacement := PresetReplacement{
+			Data:     fileData,
+			Name:     name,
+			Category: category,
+		}
+
+		replacements = append(replacements, replacement)
+	}
+
+	return replacements, nil
+}
+
+// PresetGenerator is a function type that generates replacement presets
+type PresetGenerator func(count int, nameExclusions map[string]struct{}) ([]PresetReplacement, error)
+
+// runEditCommon contains the shared logic for both edit modes
+func runEditCommon(editFile, replaceList string, generateReplacements PresetGenerator) {
 	data, err := os.ReadFile(editFile)
 	if err != nil {
 		log.Fatalf("failed to read sysex file: %v", err)
@@ -616,7 +751,45 @@ func runEdit(editFile, replaceList string, catCode byte, params map[string]Param
 	// parse replacement targets
 	targets := parseReplaceList(replaceList, existingNames)
 
+	if len(targets) == 0 {
+		fmt.Println("Error: no valid replacement targets specified")
+		return
+	}
+
 	// warn for unmatched tokens
+	warnUnmatchedTokens(replaceList, targets)
+
+	// create exclusion set for name generation
+	nameExclusions := buildNameExclusions(existingNames, targets)
+
+	// generate replacements
+	replacements, err := generateReplacements(len(targets), nameExclusions)
+	if err != nil {
+		log.Fatalf("failed to generate replacements: %v", err)
+	}
+
+	// show what will be replaced
+	showReplacementPlan(editFile, targets, existingNames, replacements)
+
+	// check for name conflicts in final result
+	checkNameConflicts(existingNames, targets, replacements)
+
+	// apply replacements
+	applyReplacements(data, targets, replacements, n)
+
+	// write updated file
+	err = os.WriteFile(editFile, data, 0644)
+	if err != nil {
+		log.Fatalf("failed to write sysex file: %v", err)
+	}
+	fmt.Printf("Successfully replaced %d presets in %s\n", len(targets), editFile)
+
+	// write descriptor and show completion message
+	updateDescriptorAndShowCompletion(editFile, data, n)
+}
+
+// warnUnmatchedTokens warns about replacement tokens that couldn't be matched
+func warnUnmatchedTokens(replaceList string, targets []replaceTarget) {
 	tokens := strings.Split(replaceList, ",")
 	for _, tok := range tokens {
 		t := strings.TrimSpace(tok)
@@ -624,11 +797,13 @@ func runEdit(editFile, replaceList string, catCode byte, params map[string]Param
 		for _, tg := range targets {
 			if tg.name != "" && strings.EqualFold(tg.name, t) {
 				matched = true
+				break
 			}
 			if tg.index >= 0 {
 				pos := strconv.Itoa(tg.index + 1)
 				if pos == t {
 					matched = true
+					break
 				}
 			}
 		}
@@ -636,40 +811,95 @@ func runEdit(editFile, replaceList string, catCode byte, params map[string]Param
 			fmt.Printf("Warning: '%s' not found as preset name or position\n", t)
 		}
 	}
+}
 
-	// create exclusion set for name generation
-	// include all existing names except those being replaced
+// buildNameExclusions creates a set of existing names to avoid conflicts
+func buildNameExclusions(existingNames []string, targets []replaceTarget) map[string]struct{} {
 	nameExclusions := make(map[string]struct{})
 	replacedIndices := make(map[int]struct{})
+
 	for _, tg := range targets {
 		replacedIndices[tg.index] = struct{}{}
 	}
+
 	for i, name := range existingNames {
 		if _, isReplaced := replacedIndices[i]; !isReplaced {
 			nameExclusions[strings.ToLower(name)] = struct{}{}
 		}
 	}
 
-	// apply replacements
-	for _, tg := range targets {
-		idx := tg.index
+	return nameExclusions
+}
+
+// showReplacementPlan displays what will be replaced
+func showReplacementPlan(editFile string, targets []replaceTarget, existingNames []string, replacements []PresetReplacement) {
+	fmt.Printf("Replacing %d presets in %s:\n", len(targets), editFile)
+	for i, target := range targets {
+		oldName := ""
+		if target.index >= 0 && target.index < len(existingNames) {
+			oldName = existingNames[target.index]
+		}
+		fmt.Printf("  Position %d: '%s' -> '%s' (%s)\n",
+			target.index+1, oldName, replacements[i].Name, replacements[i].Category)
+	}
+}
+
+// checkNameConflicts warns about duplicate names in the final result
+func checkNameConflicts(existingNames []string, targets []replaceTarget, replacements []PresetReplacement) {
+	finalNames := make([]string, len(existingNames))
+	copy(finalNames, existingNames)
+
+	// Update final names with replacements
+	for i, target := range targets {
+		finalNames[target.index] = replacements[i].Name
+	}
+
+	// Check for conflicts
+	nameConflicts := make(map[string][]int) // name -> list of positions where it appears
+	for i, name := range finalNames {
+		lowerName := strings.ToLower(name)
+		nameConflicts[lowerName] = append(nameConflicts[lowerName], i+1)
+	}
+
+	hasConflicts := false
+	for lowerName, positions := range nameConflicts {
+		if len(positions) > 1 {
+			if !hasConflicts {
+				fmt.Println("Warning: detected name conflicts in the final result:")
+				hasConflicts = true
+			}
+			// Find the original name (case-sensitive) for display
+			originalName := ""
+			for _, fname := range finalNames {
+				if strings.ToLower(fname) == lowerName {
+					originalName = fname
+					break
+				}
+			}
+			fmt.Printf("  '%s' will appear at positions: %v\n", originalName, positions)
+		}
+	}
+	if hasConflicts {
+		fmt.Println("Proceeding anyway - duplicates will be preserved")
+	}
+}
+
+// applyReplacements applies the replacement presets to the data
+func applyReplacements(data []byte, targets []replaceTarget, replacements []PresetReplacement, n int) {
+	for i, target := range targets {
+		idx := target.index
 		if idx < 0 || idx >= n {
 			fmt.Printf("Warning: position %d out of range\n", idx+1)
 			continue
 		}
-		patches, names := generatePatchesWithExclusions(1, catCode, params, allowed, schema, nameExclusions)
+
 		off := idx * patchSize
-		copy(data[off:off+patchSize], patches[0])
-		// Add the new name to exclusions to prevent future duplicates in this session
-		nameExclusions[strings.ToLower(names[0])] = struct{}{}
+		copy(data[off:off+patchSize], replacements[i].Data)
 	}
+}
 
-	err = os.WriteFile(editFile, data, 0644)
-	if err != nil {
-		log.Fatalf("failed to write sysex file: %v", err)
-	}
-	fmt.Printf("Replaced %d patches in %s\n", len(targets), editFile)
-
+// updateDescriptorAndShowCompletion handles final file updates and messaging
+func updateDescriptorAndShowCompletion(editFile string, data []byte, n int) {
 	// write descriptor using unified function
 	if err := writeDescriptorFile(editFile, data); err != nil {
 		log.Printf("Warning: %v", err)

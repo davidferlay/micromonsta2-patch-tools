@@ -7,7 +7,7 @@ A comprehensive CLI tool for managing **Micromonsta 2** hardware synthesizer pat
 ## ✨ Features
 
 - 🎲 **Generate** randomized, schema-compliant patches by category (Bass, Lead, Pad, etc.)
-- ✏️ **Edit** existing bundles by replacing specific presets by position or name
+- ✏️ **Edit** existing bundles by replacing specific presets by position or name (with random generation or specific preset files)
 - 🔍 **Describe** patch contents to see what's inside any `.syx` file
 - ✂️ **Split** multi-preset bundles into individual preset files
 - 🔗 **Group** multiple `.syx` files (single presets or bundles) into one bundle
@@ -42,14 +42,24 @@ micromonsta2-patch-tools --category Bass --count 10
 ### Edit Existing Bundles
 
 ```bash
-# Replace presets by position
+# Replace presets by position with randomly generated presets
 micromonsta2-patch-tools --edit bundle.syx --replace "1,3,5" --category Lead
 
-# Replace presets by name (case-insensitive)
+# Replace presets by name with randomly generated presets (case-insensitive)
 micromonsta2-patch-tools --edit bundle.syx --replace "happy,sad" --category Pad
 
-# Mix positions and names
+# Mix positions and names with randomly generated presets
 micromonsta2-patch-tools --edit bundle.syx --replace "1,warm,3" --category Keys
+
+# Replace presets with specific single preset files
+micromonsta2-patch-tools --edit bundle.syx --replace "1,3,5" --replace-with "preset1.syx,preset2.syx,preset3.syx"
+
+# Replace by name with specific preset files
+micromonsta2-patch-tools --edit bundle.syx --replace "warm,bright" --replace-with "my_bass.syx,cool_lead.syx"
+
+# If you have fewer replacement files than targets, files will be cycled
+micromonsta2-patch-tools --edit bundle.syx --replace "1,2,3,4" --replace-with "preset1.syx,preset2.syx"
+# This will use: preset1.syx, preset2.syx, preset1.syx, preset2.syx
 ```
 
 ### Sort Presets in Bundles
@@ -92,11 +102,12 @@ micromonsta2-patch-tools --group "preset1.syx,preset2.syx,bundle.syx"
 
 | Flag           | Description                                                      |
 | -------------- | ---------------------------------------------------------------- |
-| `--category`   | (Required for generate/edit) Patch category: Lead, Bass, Pad, Keys, Organ, String, Brass, Percussion, Drone, Noise, SFX, Arp, Misc, User1, User2, User3 |
+| `--category`   | (Required for generate/edit with random presets) Patch category: Lead, Bass, Pad, Keys, Organ, String, Brass, Percussion, Drone, Noise, SFX, Arp, Misc, User1, User2, User3 |
 | `--count`      | (Optional) Number of unique patches to generate. Default: `1`    |
 | `--specs`      | (Optional) Path to custom spec directory. Default: `specs`      |
 | `--edit`       | Path to existing `.syx` file to edit                            |
 | `--replace`    | Comma-separated list of preset positions (1-based) or names to replace |
+| `--replace-with` | Comma-separated list of single preset `.syx` files to use as replacements |
 | `--describe`   | Path to `.syx` file to describe contents                        |
 | `--split`      | Path to `.syx` file to split into individual preset files       |
 | `--group`      | Comma-separated list of `.syx` files to group into a bundle     |
@@ -160,11 +171,34 @@ micromonsta2-patch-tools --describe presets/MyBundle/mybundle_grouped_*.syx
 # 4. Sort presets by category and name
 micromonsta2-patch-tools --sort presets/MyBundle/mybundle_grouped_*.syx
 
-# 5. Replace a few presets
+# 5. Replace a few presets with random ones
 micromonsta2-patch-tools --edit presets/MyBundle/mybundle_grouped_*.syx --replace "2,5" --category Pad
 
-# 6. Split if needed
+# 6. Or replace with specific preset files
+micromonsta2-patch-tools --edit presets/MyBundle/mybundle_grouped_*.syx --replace "1,3" --replace-with "my_favorite.syx,another_great.syx"
+
+# 7. Split if needed
 micromonsta2-patch-tools --split presets/MyBundle/mybundle_grouped_*.syx
+```
+
+### Replace Presets with Specific Files
+```bash
+# See what you have
+micromonsta2-patch-tools --describe my_bundle.syx
+# Output:
+# 1: oldlead (Lead)
+# 2: oldbass (Bass)  
+# 3: oldpad (Pad)
+
+# Replace specific positions with your own presets
+micromonsta2-patch-tools --edit my_bundle.syx --replace "1,3" --replace-with "perfect_lead.syx,amazing_pad.syx"
+
+# Replace by name
+micromonsta2-patch-tools --edit my_bundle.syx --replace "oldbass" --replace-with "killer_bass.syx"
+
+# Replace multiple presets with cycling through fewer files
+micromonsta2-patch-tools --edit my_bundle.syx --replace "1,2,3,4" --replace-with "preset_a.syx,preset_b.syx"
+# Will use: preset_a, preset_b, preset_a, preset_b
 ```
 
 ### Organize Existing Bundles
@@ -197,9 +231,13 @@ micromonsta2-patch-tools --describe my_bundle.syx
 # 2: warm (Bass)
 # 3: bright (Pad)
 
-# Replace specific presets
+# Replace with randomly generated presets
 micromonsta2-patch-tools --edit my_bundle.syx --replace "warm,3" --category Keys
-# This replaces "warm" and position 3 with new Keys presets
+# This replaces "warm" and position 3 with new random Keys presets
+
+# Replace with specific preset files
+micromonsta2-patch-tools --edit my_bundle.syx --replace "1,warm" --replace-with "my_lead.syx,perfect_bass.syx"
+# This replaces position 1 with my_lead.syx and "warm" with perfect_bass.syx
 ```
 
 ---
