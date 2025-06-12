@@ -48,6 +48,15 @@ type propSchema struct {
 	Maximum int `json:"maximum"`
 }
 
+// PresetInfo holds information about a preset for sorting
+type PresetInfo struct {
+	Data     []byte
+	Name     string
+	Category string
+	CatCode  byte
+	Index    int // Original position for stable sorting
+}
+
 const patchSize = 176
 
 // categoryCodes maps category names to SysEx category byte values
@@ -70,6 +79,43 @@ var categoryCodes = map[string]byte{
 	"User3":      0x0F,
 }
 
+// getCategoryName returns the category name for a given byte code
+func getCategoryName(catByte byte) string {
+	for name, code := range categoryCodes {
+		if code == catByte {
+			return name
+		}
+	}
+	return "Unknown"
+}
+
+// getCategoryOrder returns a sort order for categories
+func getCategoryOrder(category string) int {
+	order := map[string]int{
+		"Bass":       0,
+		"Lead":       1,
+		"Pad":        2,
+		"Keys":       3,
+		"Organ":      4,
+		"String":     5,
+		"Brass":      6,
+		"Percussion": 7,
+		"Drone":      8,
+		"Noise":      9,
+		"SFX":        10,
+		"Arp":        11,
+		"Misc":       12,
+		"User1":      13,
+		"User2":      14,
+		"User3":      15,
+		"Unknown":    16,
+	}
+	if o, exists := order[category]; exists {
+		return o
+	}
+	return 16
+}
+
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
@@ -82,6 +128,7 @@ func main() {
 	describeFile := flag.String("describe", "", "SysEx file to describe contents")
 	splitFile := flag.String("split", "", "SysEx file to split into individual preset files")
 	groupFiles := flag.String("group", "", "Comma-separated list of SysEx files to group into a single bundle")
+	sortFile := flag.String("sort", "", "SysEx file to sort presets by category then alphabetically")
 	flag.Parse()
 
 	// describe mode
@@ -102,8 +149,14 @@ func main() {
 		return
 	}
 
+	// sort mode
+	if *sortFile != "" {
+		runSort(*sortFile)
+		return
+	}
+
 	if *category == "" {
-		fmt.Println("Error: --category is required.")
+		fmt.Println("Error: --category is required for generate/edit operations.")
 		printAvailableCategories()
 		os.Exit(1)
 	}
@@ -177,6 +230,111 @@ func main() {
 		flag.Usage()
 		os.Exit(1)
 	}
+}
+
+func runSort(path string) {
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Fatalf("failed to read sysex file: %v", err)
+	}
+
+	n := len(data) / patchSize
+	if n <= 1 {
+		fmt.Printf("File %s contains only %d preset, nothing to sort.\n", path, n)
+		return
+	}
+
+	fmt.Printf("Sorting %d presets in %s by category then alphabetically...\n", n, path)
+
+	// Extract preset information
+	presets := make([]PresetInfo, n)
+	for i := 0; i < n; i++ {
+		off := i * patchSize
+		presetData := make([]byte, patchSize)
+		copy(presetData, data[off:off+patchSize])
+
+		name := strings.TrimRight(string(presetData[8:16]), " \x00")
+		catByte := presetData[16]
+		category := getCategoryName(catByte)
+
+		presets[i] = PresetInfo{
+			Data:     presetData,
+			Name:     name,
+			Category: category,
+			CatCode:  catByte,
+			Index:    i, // Original position for stable sorting
+		}
+	}
+
+	// Show current order
+	fmt.Println("Current order:")
+	for i, preset := range presets {
+		fmt.Printf("  %2d: %s (%s)\n", i+1, preset.Name, preset.Category)
+	}
+
+	// Sort presets: first by category order, then alphabetically by name, then by original index for stability
+	sort.Slice(presets, func(i, j int) bool {
+		catOrderI := getCategoryOrder(presets[i].Category)
+		catOrderJ := getCategoryOrder(presets[j].Category)
+
+		if catOrderI != catOrderJ {
+			return catOrderI < catOrderJ
+		}
+
+		// Same category, sort alphabetically by name (case-insensitive)
+		nameI := strings.ToLower(presets[i].Name)
+		nameJ := strings.ToLower(presets[j].Name)
+		if nameI != nameJ {
+			return nameI < nameJ
+		}
+
+		// Same name, maintain stable sort using original index
+		return presets[i].Index < presets[j].Index
+	})
+
+	// Show new order
+	fmt.Println("\nNew order:")
+	for i, preset := range presets {
+		fmt.Printf("  %2d: %s (%s)\n", i+1, preset.Name, preset.Category)
+	}
+
+	// Rebuild the sysex data
+	newData := make([]byte, len(data))
+	for i, preset := range presets {
+		off := i * patchSize
+		copy(newData[off:off+patchSize], preset.Data)
+	}
+
+	// Create backup
+	backupPath := strings.TrimSuffix(path, ".syx") + "_backup_" + strconv.FormatInt(time.Now().Unix(), 10) + ".syx"
+	err = ioutil.WriteFile(backupPath, data, 0644)
+	if err != nil {
+		log.Printf("Warning: failed to create backup file: %v", err)
+	} else {
+		fmt.Printf("Created backup: %s\n", backupPath)
+	}
+
+	// Write sorted file
+	err = ioutil.WriteFile(path, newData, 0644)
+	if err != nil {
+		log.Fatalf("failed to write sorted sysex file: %v", err)
+	}
+
+	fmt.Printf("Sorted presets written to %s\n", path)
+
+	// Update descriptor file if it exists or if this is a multi-preset bundle
+	if err := writeDescriptorFile(path, newData); err != nil {
+		log.Printf("Warning: %v", err)
+	}
+
+	// Summary of changes
+	changes := 0
+	for i, preset := range presets {
+		if preset.Index != i {
+			changes++
+		}
+	}
+	fmt.Printf("Sorting complete: %d presets moved to new positions\n", changes)
 }
 
 func runGroup(fileList string) {
@@ -280,13 +438,7 @@ func runGroup(fileList string) {
 		// Extract name and category
 		name := strings.TrimRight(string(preset[8:16]), " \x00")
 		catByte := preset[16]
-		catName := "Unknown"
-		for k, v := range categoryCodes {
-			if v == catByte {
-				catName = k
-				break
-			}
-		}
+		catName := getCategoryName(catByte)
 
 		filename := fmt.Sprintf("%s_%s_%s.syx", catName, name, timeStr)
 		filepath := filepath.Join(subDir, filename)
@@ -328,7 +480,7 @@ func runSplit(path string) {
 
 	n := len(data) / patchSize
 	if n <= 1 {
-		fmt.Printf("File %s contains only %d preset(s), nothing to split.\n", path, n)
+		fmt.Printf("File %s contains only %d preset, nothing to split.\n", path, n)
 		return
 	}
 
@@ -352,13 +504,7 @@ func runSplit(path string) {
 		// Extract name and category
 		name := strings.TrimRight(string(presetData[8:16]), " \x00")
 		catByte := presetData[16]
-		catName := "Unknown"
-		for k, v := range categoryCodes {
-			if v == catByte {
-				catName = k
-				break
-			}
-		}
+		catName := getCategoryName(catByte)
 
 		// Create filename: Category_PresetName_timestamp.syx
 		filename := fmt.Sprintf("%s_%s_%s.syx", catName, name, timeStr)
@@ -390,13 +536,7 @@ func runDescribe(path string) {
 		name := strings.TrimRight(string(data[off+8:off+16]), " \x00")
 		// extract category
 		catByte := data[off+16]
-		catName := "Unknown"
-		for k, v := range categoryCodes {
-			if v == catByte {
-				catName = k
-				break
-			}
-		}
+		catName := getCategoryName(catByte)
 		fmt.Printf("%2d: %s (%s)\n", i+1, name, catName)
 	}
 }
@@ -595,13 +735,7 @@ func writeDescriptorFile(sysexPath string, data []byte) error {
 
 		// Extract category
 		catByte := data[i*patchSize+16]
-		catName := "Unknown"
-		for k, v := range categoryCodes {
-			if v == catByte {
-				catName = k
-				break
-			}
-		}
+		catName := getCategoryName(catByte)
 		fmt.Fprintf(w, "%2d: %s (%s)\n", i+1, name, catName)
 	}
 	w.Flush()

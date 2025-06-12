@@ -1,6 +1,6 @@
 # Micromonsta 2 Patch Tools
 
-A comprehensive CLI tool for managing **Micromonsta 2** hardware synthesizer patch presets. Generate, edit, split, group, and describe `.syx` (SysEx) patch files with schema validation and collision prevention.
+A comprehensive CLI tool for managing **Micromonsta 2** hardware synthesizer patch presets. Generate, edit, split, group, sort, and describe `.syx` (SysEx) patch files with schema validation and collision prevention.
 
 ---
 
@@ -11,6 +11,7 @@ A comprehensive CLI tool for managing **Micromonsta 2** hardware synthesizer pat
 - 🔍 **Describe** patch contents to see what's inside any `.syx` file
 - ✂️ **Split** multi-preset bundles into individual preset files
 - 🔗 **Group** multiple `.syx` files (single presets or bundles) into one bundle
+- 🔄 **Sort** presets in bundles by category then alphabetically
 - 📁 **Bundle management** with automatic descriptor files for multi-preset collections
 - 🛡️ **Name collision prevention** when editing existing bundles
 - ⚙️ **Schema validation** against comprehensive JSON parameter constraints
@@ -51,6 +52,21 @@ micromonsta2-patch-tools --edit bundle.syx --replace "happy,sad" --category Pad
 micromonsta2-patch-tools --edit bundle.syx --replace "1,warm,3" --category Keys
 ```
 
+### Sort Presets in Bundles
+
+```bash
+# Sort presets by category then alphabetically
+micromonsta2-patch-tools --sort my_bundle.syx
+```
+
+The sort feature will:
+- Display current preset order
+- Sort by category (Bass → Lead → Pad → Keys → Organ → String → Brass → Percussion → Drone → Noise → SFX → Arp → Misc → User1 → User2 → User3 → Unknown)
+- Within each category, sort alphabetically by preset name (case-insensitive)
+- Create a backup file before modifying
+- Update the descriptor file
+- Show the new order and number of presets that moved
+
 ### Describe Patch Contents
 
 ```bash
@@ -84,6 +100,7 @@ micromonsta2-patch-tools --group "preset1.syx,preset2.syx,bundle.syx"
 | `--describe`   | Path to `.syx` file to describe contents                        |
 | `--split`      | Path to `.syx` file to split into individual preset files       |
 | `--group`      | Comma-separated list of `.syx` files to group into a bundle     |
+| `--sort`       | Path to `.syx` file to sort presets by category then alphabetically |
 
 ---
 
@@ -140,11 +157,35 @@ micromonsta2-patch-tools --group "presets/Lead_*.syx,presets/Bass_*.syx"
 # 3. Check what's inside
 micromonsta2-patch-tools --describe presets/MyBundle/mybundle_grouped_*.syx
 
-# 4. Replace a few presets
+# 4. Sort presets by category and name
+micromonsta2-patch-tools --sort presets/MyBundle/mybundle_grouped_*.syx
+
+# 5. Replace a few presets
 micromonsta2-patch-tools --edit presets/MyBundle/mybundle_grouped_*.syx --replace "2,5" --category Pad
 
-# 5. Split if needed
+# 6. Split if needed
 micromonsta2-patch-tools --split presets/MyBundle/mybundle_grouped_*.syx
+```
+
+### Organize Existing Bundles
+```bash
+# See current organization
+micromonsta2-patch-tools --describe messy_bundle.syx
+# Output might show:
+# 1: warm (Pad)
+# 2: deep (Bass)
+# 3: bright (Lead)
+# 4: cool (Bass)
+# 5: soft (Pad)
+
+# Sort to organize better
+micromonsta2-patch-tools --sort messy_bundle.syx
+# New order will be:
+# 1: cool (Bass)
+# 2: deep (Bass)
+# 3: bright (Lead)
+# 4: soft (Pad)
+# 5: warm (Pad)
 ```
 
 ### Edit Existing Bundles
@@ -185,6 +226,12 @@ micromonsta2-patch-tools --edit my_bundle.syx --replace "warm,3" --category Keys
 - Case-insensitive duplicate detection
 - Multiple replacements in one session are handled safely
 
+### Sort Algorithm
+- **Primary sort**: By category in a predefined order (Bass → Lead → Pad → etc.)
+- **Secondary sort**: Alphabetically by preset name (case-insensitive)
+- **Stable sort**: Presets with identical names maintain their original relative order
+- **Backup**: Creates a timestamped backup before modifying the original file
+
 ### File Format
 - Standard MIDI SysEx format
 - 176 bytes per patch
@@ -203,4 +250,3 @@ MIT — use freely, modify safely, share joyfully.
 
 - Inspired by [Micromonsta 2](https://www.audiothingies.com/product/micromonsta-2/)
 - Uses [`gojsonschema`](https://github.com/xeipuuv/gojsonschema) and [`go-randomdata`](https://github.com/Pallinder/go-randomdata)
-
