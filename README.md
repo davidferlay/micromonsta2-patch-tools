@@ -12,6 +12,7 @@ A comprehensive CLI tool for managing **Micromonsta 2** hardware synthesizer pat
 - ✂️ **Split** multi-preset bundles into individual preset files
 - 🔗 **Group** multiple `.syx` files (single presets or bundles) into one bundle
 - 🔄 **Sort** presets in bundles by category then alphabetically
+- 🏷️ **Rename** individual presets (updates both SysEx data and filename)
 - 📁 **Bundle management** with automatic descriptor files for multi-preset collections
 - 🛡️ **Name collision prevention** when editing existing bundles
 - ⚙️ **Schema validation** against comprehensive JSON parameter constraints
@@ -61,6 +62,24 @@ micromonsta2-patch-tools --edit bundle.syx --replace "warm,bright" --replace-wit
 micromonsta2-patch-tools --edit bundle.syx --replace "1,2,3,4" --replace-with "preset1.syx,preset2.syx"
 # This will use: preset1.syx, preset2.syx, preset1.syx, preset2.syx
 ```
+
+### Rename Individual Presets
+
+```bash
+# Rename a single preset
+micromonsta2-patch-tools --edit Lead_bright_1720000000.syx --rename "killer"
+
+# The tool will update both the internal preset name and create a new file
+# Old: Lead_bright_1720000000.syx -> 'bright' (Lead)
+# New: Lead_killer_1720000001.syx -> 'killer' (Lead)
+```
+
+The rename feature will:
+- Update the preset name inside the SysEx data
+- Create a new file with the updated name in the filename
+- Remove the original file (clean replacement)
+- Automatically truncate names longer than 8 characters (hardware limitation)
+- Maintain the original category
 
 ### Sort Presets in Bundles
 
@@ -201,6 +220,23 @@ micromonsta2-patch-tools --edit my_bundle.syx --replace "1,2,3,4" --replace-with
 # Will use: preset_a, preset_b, preset_a, preset_b
 ```
 
+### Organize and Manage Individual Presets
+```bash
+# Rename a preset for better organization
+micromonsta2-patch-tools --edit Bass_adjective_1720000000.syx --rename "wobble"
+
+# Generate some presets
+micromonsta2-patch-tools --category Lead --count 3
+
+# Rename them to something meaningful
+micromonsta2-patch-tools --edit Lead_random1_*.syx --rename "arp1"
+micromonsta2-patch-tools --edit Lead_random2_*.syx --rename "arp2"
+micromonsta2-patch-tools --edit Lead_random3_*.syx --rename "arp3"
+
+# Group them into a bundle
+micromonsta2-patch-tools --group "Lead_arp1_*.syx,Lead_arp2_*.syx,Lead_arp3_*.syx"
+```
+
 ### Organize Existing Bundles
 ```bash
 # See current organization
@@ -238,6 +274,10 @@ micromonsta2-patch-tools --edit my_bundle.syx --replace "warm,3" --category Keys
 # Replace with specific preset files
 micromonsta2-patch-tools --edit my_bundle.syx --replace "1,warm" --replace-with "my_lead.syx,perfect_bass.syx"
 # This replaces position 1 with my_lead.syx and "warm" with perfect_bass.syx
+
+# Rename a single preset
+micromonsta2-patch-tools --edit Lead_bright_1720000000.syx --rename "killer"
+# This renames the preset internally and creates a new file
 ```
 
 ---

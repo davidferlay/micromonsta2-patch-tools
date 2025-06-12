@@ -130,6 +130,7 @@ func main() {
 	splitFile := flag.String("split", "", "SysEx file to split into individual preset files")
 	groupFiles := flag.String("group", "", "Comma-separated list of SysEx files to group into a single bundle")
 	sortFile := flag.String("sort", "", "SysEx file to sort presets by category then alphabetically")
+	renameTo := flag.String("rename", "", "New name for the preset when editing single preset files (max 8 characters)")
 	flag.Parse()
 
 	// describe mode
@@ -156,8 +157,8 @@ func main() {
 		return
 	}
 
-	if *category == "" && *editFile != "" && *replaceWith == "" {
-		fmt.Println("Error: --category is required for generate/edit operations (unless using --replace-with).")
+	if *category == "" && *editFile != "" && *replaceWith == "" && *renameTo == "" {
+		fmt.Println("Error: --category is required for generate/edit operations (unless using --replace-with or --rename).")
 		printAvailableCategories()
 		os.Exit(1)
 	}
@@ -235,12 +236,17 @@ func main() {
 
 	// choose mode
 	if *editFile != "" {
-		if *category != "" {
+		if *renameTo != "" {
+			// Rename mode for single preset files
+			runRename(*editFile, *renameTo)
+		} else if *category != "" {
+			// Random generation replacement mode
 			runEdit(*editFile, *replace, catCode, params, allowed, schema)
 		} else if *replaceWith != "" {
+			// File-based replacement mode
 			runEditWithFiles(*editFile, *replace, *replaceWith)
 		} else {
-			fmt.Println("Error: --edit requires either --category (for random generation) or --replace-with (for file replacement)")
+			fmt.Println("Error: --edit requires one of: --rename (for renaming), --category (for random generation), or --replace-with (for file replacement)")
 			os.Exit(1)
 		}
 	} else if *count > 0 {
@@ -358,6 +364,68 @@ func runSort(path string) {
 		}
 	}
 	fmt.Printf("Sorting complete: %d presets moved to new positions\n", changes)
+}
+
+func runRename(filePath, newName string) {
+	// Validate new name length
+	if len(newName) > 8 {
+		fmt.Printf("Warning: new name '%s' is longer than 8 characters, truncating to '%s'\n", newName, newName[:8])
+		newName = newName[:8]
+	}
+
+	// Check if file exists
+	if _, err := os.Stat(filePath); err != nil {
+		log.Fatalf("failed to access file '%s': %v", filePath, err)
+	}
+
+	// Read the file
+	data, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		log.Fatalf("failed to read sysex file: %v", err)
+	}
+
+	// Check if it's a single preset
+	if len(data) != patchSize {
+		log.Fatalf("file '%s' is not a single preset file (size: %d bytes, expected: %d)", filePath, len(data), patchSize)
+	}
+
+	// Extract current preset info
+	currentName := strings.TrimRight(string(data[8:16]), " \x00")
+	catByte := data[16]
+	category := getCategoryName(catByte)
+
+	fmt.Printf("Renaming preset '%s' (%s) to '%s'\n", currentName, category, newName)
+
+	// Update the preset name in the sysex data
+	for i := 0; i < 8; i++ {
+		if i < len(newName) {
+			data[8+i] = newName[i]
+		} else {
+			data[8+i] = 0x20 // space padding
+		}
+	}
+
+	// Generate new filename
+	timeStr := strconv.FormatInt(time.Now().Unix(), 10)
+	dir := filepath.Dir(filePath)
+	newFileName := fmt.Sprintf("%s_%s_%s.syx", category, newName, timeStr)
+	newFilePath := filepath.Join(dir, newFileName)
+
+	// Write the updated preset to the new file
+	err = ioutil.WriteFile(newFilePath, data, 0644)
+	if err != nil {
+		log.Fatalf("failed to write renamed preset: %v", err)
+	}
+
+	// Remove the original file
+	err = os.Remove(filePath)
+	if err != nil {
+		log.Printf("Warning: failed to remove original file '%s': %v", filePath, err)
+	}
+
+	fmt.Printf("Successfully renamed preset:\n")
+	fmt.Printf("  Old: %s -> '%s' (%s)\n", filepath.Base(filePath), currentName, category)
+	fmt.Printf("  New: %s -> '%s' (%s)\n", filepath.Base(newFilePath), newName, category)
 }
 
 func runGroup(fileList string) {
