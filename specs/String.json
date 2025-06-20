@@ -40,9 +40,9 @@
     "section": "Oscillator 1"
   },
   "OSC2_Algo": {
-    "min": 61,
-    "max": 76,
-    "default": 67,
+    "min": 64,
+    "max": 72,
+    "default": 72,
     "sysex_offset": 24,
     "sysex_length": 1,
     "scale": "enum",
@@ -60,8 +60,8 @@
     "section": "Oscillator 2"
   },
   "OSC2_CoarseTune": {
-    "min": 45,
-    "max": 96,
+    "min": 46,
+    "max": 80,
     "default": 80,
     "sysex_offset": 26,
     "sysex_length": 1,
@@ -71,7 +71,7 @@
   },
   "OSC2_FineTune": {
     "min": 24,
-    "max": 52,
+    "max": 24,
     "default": 24,
     "sysex_offset": 27,
     "sysex_length": 1,
@@ -81,7 +81,7 @@
   },
   "OSC3_Algo": {
     "min": 24,
-    "max": 56,
+    "max": 24,
     "default": 24,
     "sysex_offset": 28,
     "sysex_length": 1,
@@ -91,7 +91,7 @@
   },
   "OSC3_Shape": {
     "min": 24,
-    "max": 55,
+    "max": 24,
     "default": 24,
     "sysex_offset": 29,
     "sysex_length": 1,
@@ -152,7 +152,7 @@
   "NZE": {
     "min": 0,
     "max": 15,
-    "default": 6,
+    "default": 0,
     "sysex_offset": 35,
     "sysex_length": 1,
     "scale": "linear",
@@ -161,7 +161,7 @@
   },
   "FLT_Type": {
     "min": 0,
-    "max": 100,
+    "max": 48,
     "default": 0,
     "sysex_offset": 36,
     "sysex_length": 1,
@@ -170,7 +170,7 @@
     "section": "Filter"
   },
   "FLT_Cutoff": {
-    "min": 52,
+    "min": 64,
     "max": 76,
     "default": 64,
     "sysex_offset": 37,
@@ -192,7 +192,7 @@
   "FLT_EnvAmt": {
     "min": 0,
     "max": 16,
-    "default": 6,
+    "default": 0,
     "sysex_offset": 39,
     "sysex_length": 1,
     "scale": "linear",
@@ -201,7 +201,7 @@
   },
   "FLT_Character": {
     "min": 0,
-    "max": 127,
+    "max": 64,
     "default": 0,
     "sysex_offset": 40,
     "sysex_length": 1,
@@ -210,9 +210,9 @@
     "section": "Filter"
   },
   "FLT_KBD": {
-    "min": 40,
+    "min": 52,
     "max": 76,
-    "default": 64,
+    "default": 52,
     "sysex_offset": 41,
     "sysex_length": 1,
     "scale": "linear",
@@ -220,9 +220,9 @@
     "section": "Filter"
   },
   "FLT_Tracking": {
-    "min": 49,
+    "min": 54,
     "max": 75,
-    "default": 59,
+    "default": 75,
     "sysex_offset": 42,
     "sysex_length": 1,
     "scale": "linear",
@@ -232,7 +232,7 @@
   "FLT_FM": {
     "min": 0,
     "max": 19,
-    "default": 10,
+    "default": 0,
     "sysex_offset": 43,
     "sysex_length": 1,
     "scale": "linear",
@@ -241,7 +241,7 @@
   },
   "UNUSED_44": {
     "min": 0,
-    "max": 84,
+    "max": 30,
     "default": 0,
     "sysex_offset": 44,
     "sysex_length": 1,
@@ -260,7 +260,7 @@
     "section": "UNUSED"
   },
   "DRV": {
-    "min": 51,
+    "min": 64,
     "max": 71,
     "default": 64,
     "sysex_offset": 46,
@@ -270,7 +270,7 @@
     "section": "DRV"
   },
   "Mix_Level": {
-    "min": 0,
+    "min": 82,
     "max": 127,
     "default": 127,
     "sysex_offset": 47,
@@ -280,9 +280,9 @@
     "section": "Mix"
   },
   "ENV1_Attack": {
-    "min": 0,
+    "min": 85,
     "max": 127,
-    "default": 0,
+    "default": 95,
     "sysex_offset": 48,
     "sysex_length": 1,
     "scale": "linear",
@@ -291,7 +291,7 @@
   },
   "ENV1_Decay": {
     "min": 0,
-    "max": 100,
+    "max": 65,
     "default": 0,
     "sysex_offset": 49,
     "sysex_length": 1,
@@ -301,7 +301,7 @@
   },
   "ENV1_Sustain": {
     "min": 0,
-    "max": 34,
+    "max": 7,
     "default": 0,
     "sysex_offset": 50,
     "sysex_length": 1,
@@ -312,7 +312,7 @@
   "ENV1_Release": {
     "min": 0,
     "max": 1,
-    "default": 1,
+    "default": 0,
     "sysex_offset": 51,
     "sysex_length": 1,
     "scale": "linear",
@@ -321,8 +321,8 @@
   },
   "ENV2_Attack": {
     "min": 13,
-    "max": 127,
-    "default": 127,
+    "max": 120,
+    "default": 82,
     "sysex_offset": 52,
     "sysex_length": 1,
     "scale": "linear",
@@ -331,8 +331,8 @@
   },
   "ENV2_Decay": {
     "min": 0,
-    "max": 94,
-    "default": 0,
+    "max": 87,
+    "default": 87,
     "sysex_offset": 53,
     "sysex_length": 1,
     "scale": "linear",
@@ -351,8 +351,8 @@
   },
   "ENV2_Release": {
     "min": 0,
-    "max": 99,
-    "default": 0,
+    "max": 79,
+    "default": 21,
     "sysex_offset": 55,
     "sysex_length": 1,
     "scale": "linear",
@@ -361,8 +361,8 @@
   },
   "ENV3_Attack": {
     "min": 0,
-    "max": 100,
-    "default": 0,
+    "max": 50,
+    "default": 50,
     "sysex_offset": 56,
     "sysex_length": 1,
     "scale": "linear",
@@ -371,7 +371,7 @@
   },
   "ENV3_Decay": {
     "min": 0,
-    "max": 79,
+    "max": 78,
     "default": 0,
     "sysex_offset": 57,
     "sysex_length": 1,
@@ -381,7 +381,7 @@
   },
   "ENV3_Sustain": {
     "min": 0,
-    "max": 69,
+    "max": 22,
     "default": 0,
     "sysex_offset": 58,
     "sysex_length": 1,
@@ -391,8 +391,8 @@
   },
   "ENV3_Release": {
     "min": 0,
-    "max": 60,
-    "default": 0,
+    "max": 27,
+    "default": 11,
     "sysex_offset": 59,
     "sysex_length": 1,
     "scale": "linear",
@@ -401,8 +401,8 @@
   },
   "LFO1_Waveform": {
     "min": 0,
-    "max": 127,
-    "default": 0,
+    "max": 71,
+    "default": 50,
     "sysex_offset": 60,
     "sysex_length": 1,
     "scale": "linear",
@@ -410,9 +410,9 @@
     "section": "LFO 1"
   },
   "LFO1_Speed": {
-    "min": 12,
+    "min": 34,
     "max": 127,
-    "default": 127,
+    "default": 34,
     "sysex_offset": 61,
     "sysex_length": 1,
     "scale": "linear",
@@ -420,9 +420,9 @@
     "section": "LFO 1"
   },
   "LFO1_Mode": {
-    "min": 0,
-    "max": 84,
-    "default": 0,
+    "min": 35,
+    "max": 62,
+    "default": 35,
     "sysex_offset": 62,
     "sysex_length": 1,
     "scale": "enum",
@@ -430,9 +430,9 @@
     "section": "LFO 1"
   },
   "LFO1_UNUSED": {
-    "min": 0,
+    "min": 5,
     "max": 84,
-    "default": 42,
+    "default": 5,
     "sysex_offset": 63,
     "sysex_length": 1,
     "scale": "linear",
@@ -440,8 +440,8 @@
     "section": "LFO 1"
   },
   "LFO2_Waveform": {
-    "min": 51,
-    "max": 89,
+    "min": 56,
+    "max": 64,
     "default": 64,
     "sysex_offset": 64,
     "sysex_length": 1,
@@ -451,7 +451,7 @@
   },
   "LFO2_Speed": {
     "min": 0,
-    "max": 80,
+    "max": 44,
     "default": 32,
     "sysex_offset": 65,
     "sysex_length": 1,
@@ -461,8 +461,8 @@
   },
   "LFO2_Mode": {
     "min": 0,
-    "max": 80,
-    "default": 32,
+    "max": 76,
+    "default": 25,
     "sysex_offset": 66,
     "sysex_length": 1,
     "scale": "enum",
@@ -471,8 +471,8 @@
   },
   "LFO2_UNUSED": {
     "min": 9,
-    "max": 100,
-    "default": 42,
+    "max": 47,
+    "default": 9,
     "sysex_offset": 67,
     "sysex_length": 1,
     "scale": "linear",
@@ -481,7 +481,7 @@
   },
   "LFO3_Waveform": {
     "min": 64,
-    "max": 100,
+    "max": 65,
     "default": 64,
     "sysex_offset": 68,
     "sysex_length": 1,
@@ -491,7 +491,7 @@
   },
   "LFO3_Speed": {
     "min": 32,
-    "max": 72,
+    "max": 32,
     "default": 32,
     "sysex_offset": 69,
     "sysex_length": 1,
@@ -500,8 +500,8 @@
     "section": "LFO3"
   },
   "LFO3_Mode": {
-    "min": 32,
-    "max": 88,
+    "min": 19,
+    "max": 62,
     "default": 32,
     "sysex_offset": 70,
     "sysex_length": 1,
@@ -530,8 +530,8 @@
     "section": "Matrix1"
   },
   "Matrix1_Source": {
-    "min": 15,
-    "max": 72,
+    "min": 19,
+    "max": 68,
     "default": 64,
     "sysex_offset": 73,
     "sysex_length": 1,
@@ -540,7 +540,7 @@
     "section": "Matrix1"
   },
   "Matrix1_Amount": {
-    "min": 0,
+    "min": 2,
     "max": 3,
     "default": 3,
     "sysex_offset": 74,
@@ -551,7 +551,7 @@
   },
   "Matrix1_UNUSED": {
     "min": 0,
-    "max": 9,
+    "max": 3,
     "default": 0,
     "sysex_offset": 75,
     "sysex_length": 1,
@@ -570,8 +570,8 @@
     "section": "Matrix2"
   },
   "Matrix2_Source": {
-    "min": 6,
-    "max": 70,
+    "min": 18,
+    "max": 59,
     "default": 48,
     "sysex_offset": 77,
     "sysex_length": 1,
@@ -581,7 +581,7 @@
   },
   "Matrix2_Amount": {
     "min": 0,
-    "max": 2,
+    "max": 0,
     "default": 0,
     "sysex_offset": 78,
     "sysex_length": 1,
@@ -591,7 +591,7 @@
   },
   "Matrix2_UNUSED": {
     "min": 0,
-    "max": 16,
+    "max": 1,
     "default": 0,
     "sysex_offset": 79,
     "sysex_length": 1,
@@ -611,7 +611,7 @@
   },
   "Matrix3_Source": {
     "min": 4,
-    "max": 57,
+    "max": 48,
     "default": 48,
     "sysex_offset": 81,
     "sysex_length": 1,
@@ -631,7 +631,7 @@
   },
   "Matrix3_UNUSED": {
     "min": 12,
-    "max": 24,
+    "max": 22,
     "default": 21,
     "sysex_offset": 83,
     "sysex_length": 1,
@@ -660,8 +660,8 @@
     "section": "Matrix4"
   },
   "Matrix4_Amount": {
-    "min": 1,
-    "max": 95,
+    "min": 8,
+    "max": 78,
     "default": 8,
     "sysex_offset": 86,
     "sysex_length": 1,
@@ -671,7 +671,7 @@
   },
   "Matrix4_UNUSED": {
     "min": 0,
-    "max": 39,
+    "max": 29,
     "default": 0,
     "sysex_offset": 87,
     "sysex_length": 1,
@@ -690,7 +690,7 @@
     "section": "Matrix5"
   },
   "Matrix5_Source": {
-    "min": 0,
+    "min": 1,
     "max": 1,
     "default": 1,
     "sysex_offset": 89,
@@ -701,7 +701,7 @@
   },
   "Matrix5_Amount": {
     "min": 0,
-    "max": 118,
+    "max": 99,
     "default": 0,
     "sysex_offset": 90,
     "sysex_length": 1,
@@ -711,8 +711,8 @@
   },
   "Matrix5_UNUSED": {
     "min": 0,
-    "max": 34,
-    "default": 0,
+    "max": 30,
+    "default": 24,
     "sysex_offset": 91,
     "sysex_length": 1,
     "scale": "linear",
@@ -721,8 +721,8 @@
   },
   "Matrix6_Dest": {
     "min": 0,
-    "max": 34,
-    "default": 0,
+    "max": 7,
+    "default": 6,
     "sysex_offset": 92,
     "sysex_length": 1,
     "scale": "linear",
@@ -761,8 +761,8 @@
   },
   "Matrix7_Dest": {
     "min": 0,
-    "max": 32,
-    "default": 0,
+    "max": 12,
+    "default": 12,
     "sysex_offset": 96,
     "sysex_length": 1,
     "scale": "linear",
@@ -770,7 +770,7 @@
     "section": "Matrix7"
   },
   "Matrix7_Source": {
-    "min": 0,
+    "min": 1,
     "max": 1,
     "default": 1,
     "sysex_offset": 97,
@@ -781,7 +781,7 @@
   },
   "Matrix7_Amount": {
     "min": 0,
-    "max": 97,
+    "max": 72,
     "default": 0,
     "sysex_offset": 98,
     "sysex_length": 1,
@@ -791,7 +791,7 @@
   },
   "Matrix7_UNUSED": {
     "min": 0,
-    "max": 30,
+    "max": 6,
     "default": 0,
     "sysex_offset": 99,
     "sysex_length": 1,
@@ -810,7 +810,7 @@
     "section": "Matrix8"
   },
   "Matrix8_Source": {
-    "min": 0,
+    "min": 1,
     "max": 1,
     "default": 1,
     "sysex_offset": 101,
@@ -821,7 +821,7 @@
   },
   "Matrix8_Amount": {
     "min": 0,
-    "max": 125,
+    "max": 99,
     "default": 0,
     "sysex_offset": 102,
     "sysex_length": 1,
@@ -831,7 +831,7 @@
   },
   "Matrix8_UNUSED": {
     "min": 0,
-    "max": 30,
+    "max": 6,
     "default": 0,
     "sysex_offset": 103,
     "sysex_length": 1,
@@ -841,7 +841,7 @@
   },
   "Matrix9_Dest": {
     "min": 0,
-    "max": 10,
+    "max": 7,
     "default": 0,
     "sysex_offset": 104,
     "sysex_length": 1,
@@ -861,7 +861,7 @@
   },
   "Matrix9_Amount": {
     "min": 0,
-    "max": 62,
+    "max": 52,
     "default": 0,
     "sysex_offset": 106,
     "sysex_length": 1,
@@ -871,7 +871,7 @@
   },
   "Matrix9_UNUSED": {
     "min": 0,
-    "max": 30,
+    "max": 6,
     "default": 0,
     "sysex_offset": 107,
     "sysex_length": 1,
@@ -890,7 +890,7 @@
     "section": "Matrix10"
   },
   "Matrix10_Source": {
-    "min": 0,
+    "min": 1,
     "max": 1,
     "default": 1,
     "sysex_offset": 109,
@@ -901,7 +901,7 @@
   },
   "Matrix10_Amount": {
     "min": 0,
-    "max": 116,
+    "max": 71,
     "default": 0,
     "sysex_offset": 110,
     "sysex_length": 1,
@@ -911,7 +911,7 @@
   },
   "Matrix10_UNUSED": {
     "min": 0,
-    "max": 16,
+    "max": 0,
     "default": 0,
     "sysex_offset": 111,
     "sysex_length": 1,
@@ -921,7 +921,7 @@
   },
   "Lag1_Source": {
     "min": 0,
-    "max": 34,
+    "max": 1,
     "default": 0,
     "sysex_offset": 112,
     "sysex_length": 1,
@@ -941,7 +941,7 @@
   },
   "Lag1_Amount": {
     "min": 0,
-    "max": 16,
+    "max": 0,
     "default": 0,
     "sysex_offset": 114,
     "sysex_length": 1,
@@ -1091,7 +1091,7 @@
   },
   "ARP_Gate": {
     "min": 0,
-    "max": 127,
+    "max": 0,
     "default": 0,
     "sysex_offset": 129,
     "sysex_length": 1,
@@ -1130,8 +1130,8 @@
     "section": "Arpeggiator"
   },
   "ARP_UN1": {
-    "min": 33,
-    "max": 106,
+    "min": 58,
+    "max": 84,
     "default": 84,
     "sysex_offset": 133,
     "sysex_length": 1,
@@ -1140,7 +1140,7 @@
     "section": "Arpeggiator"
   },
   "ARP_UN2": {
-    "min": 8,
+    "min": 48,
     "max": 70,
     "default": 48,
     "sysex_offset": 134,
@@ -1151,7 +1151,7 @@
   },
   "ARP_Latch": {
     "min": 0,
-    "max": 88,
+    "max": 48,
     "default": 0,
     "sysex_offset": 135,
     "sysex_length": 1,
@@ -1160,8 +1160,8 @@
     "section": "Arpeggiator"
   },
   "ARP_Step1": {
-    "min": 18,
-    "max": 120,
+    "min": 42,
+    "max": 52,
     "default": 42,
     "sysex_offset": 136,
     "sysex_length": 1,
@@ -1170,8 +1170,8 @@
     "section": "Arpeggiator"
   },
   "ARP_Step2": {
-    "min": 0,
-    "max": 127,
+    "min": 42,
+    "max": 114,
     "default": 42,
     "sysex_offset": 137,
     "sysex_length": 1,
@@ -1181,8 +1181,8 @@
   },
   "ARP_Step3": {
     "min": 0,
-    "max": 103,
-    "default": 0,
+    "max": 90,
+    "default": 47,
     "sysex_offset": 138,
     "sysex_length": 1,
     "scale": "linear",
@@ -1241,7 +1241,7 @@
   },
   "ARP_Step9": {
     "min": 0,
-    "max": 1,
+    "max": 0,
     "default": 0,
     "sysex_offset": 144,
     "sysex_length": 1,
@@ -1300,9 +1300,9 @@
     "section": "Arpeggiator"
   },
   "ARP_Step15": {
-    "min": 0,
+    "min": 1,
     "max": 7,
-    "default": 3,
+    "default": 4,
     "sysex_offset": 150,
     "sysex_length": 1,
     "scale": "linear",
@@ -1310,7 +1310,7 @@
     "section": "Arpeggiator"
   },
   "ARP_Step16": {
-    "min": 0,
+    "min": 3,
     "max": 3,
     "default": 3,
     "sysex_offset": 151,
@@ -1330,7 +1330,7 @@
     "section": "IFX"
   },
   "IFX_UN1": {
-    "min": 2,
+    "min": 3,
     "max": 4,
     "default": 3,
     "sysex_offset": 153,
