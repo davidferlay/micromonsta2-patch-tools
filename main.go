@@ -920,6 +920,10 @@ func runDescribe(path string) {
 		catName := getCategoryName(catByte)
 		fmt.Printf("%2d: %s (%s)\n", i+1, name, catName)
 	}
+	// Write descriptor file
+	if err := writeDescriptorFile(path, data); err != nil {
+		log.Printf("Warning: %v", err)
+	}
 }
 
 func loadSpec(path, specDir string) ([]byte, error) {
