@@ -160,6 +160,7 @@ The extract feature will:
 ```bash
 # Group multiple files into a new bundle
 micromonsta2-patch-tools --group "preset1.syx,preset2.syx,bundle.syx"
+micromonsta2-patch-tools --group dirname/
 ```
 
 ### Command Line Arguments
@@ -175,7 +176,7 @@ micromonsta2-patch-tools --group "preset1.syx,preset2.syx,bundle.syx"
 | `--describe`   | Path to `.syx` file to describe contents                        |
 | `--split`      | Path to `.syx` file to split into individual preset files       |
 | `--extract`    | Comma-separated list of preset positions (1-based) or names to extract from bundle |
-| `--group`      | Comma-separated list of `.syx` files to group into a bundle     |
+| `--group`      | Comma-separated list of `.syx` files or directories to group into a bundle     |
 | `--sort`       | Path to `.syx` file to sort presets by category then alphabetically |
 
 ---
@@ -260,7 +261,7 @@ micromonsta2-patch-tools --split presets/MyBundle/mybundle_grouped_*.syx
 micromonsta2-patch-tools --describe my_bundle.syx
 # Output:
 # 1: oldlead (Lead)
-# 2: oldbass (Bass)  
+# 2: oldbass (Bass)
 # 3: oldpad (Pad)
 
 # Replace specific positions with your own presets

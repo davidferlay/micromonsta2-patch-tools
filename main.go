@@ -156,7 +156,7 @@ func main() {
 	describeFile := flag.String("describe", "", "SysEx file to describe contents")
 	splitFile := flag.String("split", "", "SysEx file to split into individual preset files")
 	extractFrom := flag.String("extract", "", "Comma-separated list of preset positions (1-based) or names to extract from bundle")
-	groupFiles := flag.String("group", "", "Comma-separated list of SysEx files to group into a single bundle")
+	groupFiles := flag.String("group", "", "Comma-separated list of SysEx files or directories to group into a single bundle")
 	sortFile := flag.String("sort", "", "SysEx file to sort presets by category then alphabetically")
 	renameTo := flag.String("rename", "", "New name for the preset when editing single preset files (max 8 characters)")
 	changeCategoryTo := flag.String("change-category", "", "New category for the preset when editing single preset files (e.g. Lead, Bass, Pad)")
@@ -638,20 +638,32 @@ func runGroup(fileList string) {
 			continue
 		}
 
-		// Check if file exists and is readable
-		if _, err := os.Stat(path); err != nil {
+		info, err := os.Stat(path)
+		if err != nil {
 			fmt.Printf("Warning: skipping '%s' - %v\n", path, err)
 			continue
 		}
 
-		// Check if file size is valid (multiple of patchSize)
-		info, _ := os.Stat(path)
-		if info.Size()%patchSize != 0 {
-			fmt.Printf("Warning: skipping '%s' - invalid file size (%d bytes, not multiple of %d)\n",
-				path, info.Size(), patchSize)
+		if info.IsDir() {
+			// Include all .syx files in directory
+			entries, err := ioutil.ReadDir(path)
+			if err != nil {
+				fmt.Printf("Warning: failed to read directory '%s': %v\n", path, err)
+				continue
+			}
+			for _, e := range entries {
+				if e.IsDir() {
+					continue
+				}
+				if strings.ToLower(filepath.Ext(e.Name())) != ".syx" {
+					continue
+				}
+				validFiles = append(validFiles, filepath.Join(path, e.Name()))
+			}
 			continue
 		}
 
+		// Single file
 		validFiles = append(validFiles, path)
 	}
 
