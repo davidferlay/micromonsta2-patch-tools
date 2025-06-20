@@ -1,0 +1,22 @@
+{
+    "Mixer_Noise_Level": {
+        "min": 50,
+        "max": 127
+    },
+    "Filter_Cutoff": {
+        "min": 20,
+        "max": 127
+    },
+    "Filter_Resonance": {
+        "min": 0,
+        "max": 70
+    },
+    "Env1_Attack": {
+        "min": 0,
+        "max": 30
+    },
+    "Env1_Release": {
+        "min": 20,
+        "max": 127
+    }
+}

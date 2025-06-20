@@ -1,0 +1,38 @@
+{
+    "OSC1_Algo": {
+        "min": 0,
+        "max": 15
+    },
+    "OSC1_Shape": {
+        "min": 0,
+        "max": 127
+    },
+    "OSC1_CoarseTune": {
+        "min": -24,
+        "max": 24
+    },
+    "OSC1_FineTune": {
+        "min": -50,
+        "max": 50
+    },
+    "Filter_Cutoff": {
+        "min": 20,
+        "max": 90
+    },
+    "Filter_Resonance": {
+        "min": 0,
+        "max": 50
+    },
+    "Env1_Attack": {
+        "min": 50,
+        "max": 127
+    },
+    "Env1_Release": {
+        "min": 50,
+        "max": 127
+    },
+    "LFO1_Speed": {
+        "min": 0,
+        "max": 30
+    }
+}

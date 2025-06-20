@@ -1,0 +1,682 @@
+{
+  "OSC1_Algo": {
+    "min": 0,
+    "max": 52,
+    "default": 0,
+    "sysex_offset": 20,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Oscillator 1"
+  },
+  "OSC1_Shape": {
+    "min": 0,
+    "max": 80,
+    "default": 0,
+    "sysex_offset": 21,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Oscillator 1"
+  },
+  "OSC1_CoarseTune": {
+    "min": 0,
+    "max": 38,
+    "default": 0,
+    "sysex_offset": 22,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "semitones",
+    "section": "Oscillator 1"
+  },
+  "OSC1_FineTune": {
+    "min": 0,
+    "max": 56,
+    "default": 0,
+    "sysex_offset": 23,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "cents",
+    "section": "Oscillator 1"
+  },
+  "OSC2_Algo": {
+    "min": 60,
+    "max": 79,
+    "default": 67,
+    "sysex_offset": 24,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Oscillator 2"
+  },
+  "OSC2_Shape": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 25,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Oscillator 2"
+  },
+  "OSC2_CoarseTune": {
+    "min": 42,
+    "max": 96,
+    "default": 80,
+    "sysex_offset": 26,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "semitones",
+    "section": "Oscillator 2"
+  },
+  "OSC2_FineTune": {
+    "min": 0,
+    "max": 127,
+    "default": 24,
+    "sysex_offset": 27,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "cents",
+    "section": "Oscillator 2"
+  },
+  "OSC3_Algo": {
+    "min": 0,
+    "max": 89,
+    "default": 24,
+    "sysex_offset": 28,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Oscillator 3"
+  },
+  "OSC3_Shape": {
+    "min": 0,
+    "max": 127,
+    "default": 24,
+    "sysex_offset": 29,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Oscillator 3"
+  },
+  "OSC3_CoarseTune": {
+    "min": 0,
+    "max": 69,
+    "default": 0,
+    "sysex_offset": 30,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "semitones",
+    "section": "Oscillator 3"
+  },
+  "OSC3_FineTune": {
+    "min": 52,
+    "max": 62,
+    "default": 62,
+    "sysex_offset": 31,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "cents",
+    "section": "Oscillator 3"
+  },
+  "MIX1": {
+    "min": 40,
+    "max": 100,
+    "default": 2,
+    "sysex_offset": 32,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "MIX1"
+  },
+  "MIX2": {
+    "min": 40,
+    "max": 100,
+    "default": 0,
+    "sysex_offset": 33,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "MIX2"
+  },
+  "MIX3": {
+    "min": 30,
+    "max": 80,
+    "default": 0,
+    "sysex_offset": 34,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "MIX3"
+  },
+  "NZE": {
+    "min": 0,
+    "max": 15,
+    "default": 6,
+    "sysex_offset": 35,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Noise"
+  },
+  "FLT_Type": {
+    "min": 0,
+    "max": 127,
+    "default": 0,
+    "sysex_offset": 36,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Filter"
+  },
+  "FLT_Cutoff": {
+    "min": 30,
+    "max": 80,
+    "default": 64,
+    "sysex_offset": 37,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Filter"
+  },
+  "FLT_Resonance": {
+    "min": 54,
+    "max": 71,
+    "default": 64,
+    "sysex_offset": 38,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Filter"
+  },
+  "FLT_EnvAmt": {
+    "min": 0,
+    "max": 19,
+    "default": 6,
+    "sysex_offset": 39,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Filter"
+  },
+  "FLT_Character": {
+    "min": 0,
+    "max": 121,
+    "default": 0,
+    "sysex_offset": 40,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Filter"
+  },
+  "FLT_KBD": {
+    "min": 45,
+    "max": 76,
+    "default": 64,
+    "sysex_offset": 41,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Filter"
+  },
+  "FLT_Tracking": {
+    "min": 39,
+    "max": 75,
+    "default": 59,
+    "sysex_offset": 42,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Filter"
+  },
+  "FLT_FM": {
+    "min": 0,
+    "max": 19,
+    "default": 10,
+    "sysex_offset": 43,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Filter"
+  },
+  "UNUSED_44": {
+    "min": 0,
+    "max": 117,
+    "default": 0,
+    "sysex_offset": 44,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "UNUSED"
+  },
+  "UNUSED_45": {
+    "min": 40,
+    "max": 76,
+    "default": 52,
+    "sysex_offset": 45,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "UNUSED"
+  },
+  "DRV": {
+    "min": 58,
+    "max": 89,
+    "default": 64,
+    "sysex_offset": 46,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "DRV"
+  },
+  "Mix_Level": {
+    "min": 0,
+    "max": 127,
+    "default": 127,
+    "sysex_offset": 47,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Mix"
+  },
+  "ENV1_Attack": {
+    "min": 30,
+    "max": 127,
+    "default": 0,
+    "sysex_offset": 48,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "ms",
+    "section": "ENV1"
+  },
+  "ENV1_Decay": {
+    "min": 0,
+    "max": 127,
+    "default": 0,
+    "sysex_offset": 49,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "ms",
+    "section": "ENV1"
+  },
+  "ENV1_Sustain": {
+    "min": 70,
+    "max": 127,
+    "default": 0,
+    "sysex_offset": 50,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "ENV1"
+  },
+  "ENV1_Release": {
+    "min": 0,
+    "max": 1,
+    "default": 1,
+    "sysex_offset": 51,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "ms",
+    "section": "ENV1"
+  },
+  "ENV2_Attack": {
+    "min": 0,
+    "max": 127,
+    "default": 127,
+    "sysex_offset": 52,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "ms",
+    "section": "ENV2"
+  },
+  "ENV2_Decay": {
+    "min": 0,
+    "max": 127,
+    "default": 0,
+    "sysex_offset": 53,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "ms",
+    "section": "ENV2"
+  },
+  "ENV2_Sustain": {
+    "min": 0,
+    "max": 1,
+    "default": 1,
+    "sysex_offset": 54,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "ENV2"
+  },
+  "ENV2_Release": {
+    "min": 0,
+    "max": 121,
+    "default": 0,
+    "sysex_offset": 55,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "ms",
+    "section": "ENV2"
+  },
+  "ENV3_Attack": {
+    "min": 0,
+    "max": 100,
+    "default": 0,
+    "sysex_offset": 56,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "ms",
+    "section": "ENV3"
+  },
+  "ENV3_Decay": {
+    "min": 0,
+    "max": 110,
+    "default": 0,
+    "sysex_offset": 57,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "ms",
+    "section": "ENV3"
+  },
+  "ENV3_Sustain": {
+    "min": 0,
+    "max": 127,
+    "default": 0,
+    "sysex_offset": 58,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "ENV3"
+  },
+  "ENV3_Release": {
+    "min": 0,
+    "max": 57,
+    "default": 0,
+    "sysex_offset": 59,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "ms",
+    "section": "ENV3"
+  },
+  "LFO1_Waveform": {
+    "min": 0,
+    "max": 121,
+    "default": 0,
+    "sysex_offset": 60,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "LFO 1"
+  },
+  "LFO1_Speed": {
+    "min": 0,
+    "max": 127,
+    "default": 127,
+    "sysex_offset": 61,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "LFO 1"
+  },
+  "LFO1_Mode": {
+    "min": 0,
+    "max": 72,
+    "default": 0,
+    "sysex_offset": 62,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "LFO 1"
+  },
+  "LFO1_UNUSED": {
+    "min": 0,
+    "max": 100,
+    "default": 42,
+    "sysex_offset": 63,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "LFO 1"
+  },
+  "LFO2_Waveform": {
+    "min": 0,
+    "max": 110,
+    "default": 64,
+    "sysex_offset": 64,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "LFO 2"
+  },
+  "LFO2_Speed": {
+    "min": 0,
+    "max": 127,
+    "default": 32,
+    "sysex_offset": 65,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "LFO 2"
+  },
+  "LFO2_Mode": {
+    "min": 0,
+    "max": 127,
+    "default": 32,
+    "sysex_offset": 66,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "LFO 2"
+  },
+  "LFO2_UNUSED": {
+    "min": 0,
+    "max": 109,
+    "default": 42,
+    "sysex_offset": 67,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "LFO 2"
+  },
+  "LFO3_Waveform": {
+    "min": 0,
+    "max": 127,
+    "default": 64,
+    "sysex_offset": 68,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "LFO3"
+  },
+  "LFO3_Speed": {
+    "min": 0,
+    "max": 127,
+    "default": 32,
+    "sysex_offset": 69,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "LFO3"
+  },
+  "LFO3_Mode": {
+    "min": 0,
+    "max": 86,
+    "default": 32,
+    "sysex_offset": 70,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "LFO3"
+  },
+  "LFO3_UNUSED": {
+    "min": 0,
+    "max": 16,
+    "default": 0,
+    "sysex_offset": 71,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "LFO3"
+  },
+  "ARP_Style": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 128,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_Gate": {
+    "min": 0,
+    "max": 127,
+    "default": 0,
+    "sysex_offset": 129,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_OctaveRange": {
+    "min": 0,
+    "max": 1,
+    "default": 1,
+    "sysex_offset": 130,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_Speed": {
+    "min": 0,
+    "max": 126,
+    "default": 0,
+    "sysex_offset": 131,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "ARP_OnOff": {
+    "min": 0,
+    "max": 1,
+    "default": 0,
+    "sysex_offset": 132,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Arpeggiator"
+  },
+  "IFX_Type": {
+    "min": 1,
+    "max": 3,
+    "default": 0,
+    "sysex_offset": 152,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "IFX"
+  },
+  "Delay_Type": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 156,
+    "sysex_length": 1,
+    "scale": "enum",
+    "unit": "",
+    "section": "Delay"
+  },
+  "Delay_Time": {
+    "min": 0,
+    "max": 3,
+    "default": 0,
+    "sysex_offset": 157,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Delay"
+  },
+  "Delay_Feedback": {
+    "min": 15,
+    "max": 15,
+    "default": 15,
+    "sysex_offset": 158,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Delay"
+  },
+  "Delay_Level": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 159,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Delay"
+  },
+  "Reverb_Decay": {
+    "min": 60,
+    "max": 127,
+    "default": 0,
+    "sysex_offset": 160,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "ms",
+    "section": "Reverb"
+  },
+  "Reverb_Mod": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 161,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Reverb"
+  },
+  "Reverb_Level": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 162,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Reverb"
+  },
+  "VoiceMode_Unison": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 164,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "VoiceMode"
+  },
+  "Pan_Spread": {
+    "min": 0,
+    "max": 0,
+    "default": 0,
+    "sysex_offset": 165,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Pan"
+  },
+  "Voice_Detune": {
+    "min": 3,
+    "max": 15,
+    "default": 0,
+    "sysex_offset": 167,
+    "sysex_length": 1,
+    "scale": "linear",
+    "unit": "",
+    "section": "Voice"
+  }
+}
